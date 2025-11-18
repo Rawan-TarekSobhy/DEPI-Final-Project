@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       initialBinding: BindingsBuilder(() {
         Get.lazyPut(() => AuthService(), fenix: true);
-        Get.lazyPut(() => ConnectivityService());
+        Get.lazyPut(() => ConnectivityService(), fenix: true);
         Get.lazyPut(() => PharmaciesService());
       }),
       theme: ThemeData(

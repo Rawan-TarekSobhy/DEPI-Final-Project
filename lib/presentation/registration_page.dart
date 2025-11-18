@@ -241,23 +241,7 @@ class SignUpView extends GetView<SignUpController> {
                       ),
 
                       // Error "passwords do not match"
-                      Obx(
-                        () => controller.passwordsDoNotMatch.value
-                            ? const Padding(
-                                padding: EdgeInsets.only(top: 6.0),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(
-                                    'Passwords do not match',
-                                    style: TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 11,
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : const SizedBox.shrink(),
-                      ),
+
 
                       SizedBox(height: screenHeight * 0.025),
 

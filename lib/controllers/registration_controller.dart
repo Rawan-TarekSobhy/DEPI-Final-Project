@@ -15,8 +15,6 @@ class SignUpController extends GetxController {
   final isPasswordVisible = true.obs;
   final isConfirmPasswordVisible = true.obs;
 
-  final passwordsDoNotMatch = false.obs;
-
   final RxDouble passwordStrength = 0.0.obs;
   final RxString strengthLabel = "".obs;
   final Rx<Color> strengthColor = Colors.grey.obs;
@@ -99,19 +97,9 @@ class SignUpController extends GetxController {
   }
 
   void onPasswordChanged() {
-    checkPasswordMatch();
     checkPasswordStrength();
   }
 
-  void checkPasswordMatch() {
-    if (passworddController.text.isNotEmpty &&
-        confirmPasswordController.text.isNotEmpty) {
-      passwordsDoNotMatch.value =
-          passworddController.text != confirmPasswordController.text;
-    } else {
-      passwordsDoNotMatch.value = false;
-    }
-  }
 
   void checkPasswordStrength() {
     final password = passworddController.text;
@@ -140,14 +128,6 @@ class SignUpController extends GetxController {
 
   // ---------- Create Account ----------
   Future createAccount() async {
-    // Form validation should be done by the widget before calling controller.createAccount()
-
-    // extra check
-    onPasswordChanged();
-    if (passwordsDoNotMatch.value) {
-      showErrorSnackbar('Passwords do not match');
-      return;
-    }
 
     // optional: منع الضعيف
     if (passwordStrength.value < 0.4) {
