@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:reminder_app/controllers/medication_log_controller.dart';
-import 'package:reminder_app/controllers/medication_log_controller.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class MedicationLogPage extends StatelessWidget {
   final controller = Get.put(MedicationLogController());
@@ -12,16 +12,18 @@ class MedicationLogPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Medication Log'),
+        title: const Text('Medication Log'),
         backgroundColor: Colors.blue,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(
+            child: SpinKitPumpingHeart(color: Color(0xFF4FC3F7), size: 50),
+          );
         }
         return Padding(
           padding: const EdgeInsets.all(16.0),
@@ -38,7 +40,7 @@ class MedicationLogPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: [
+                        children: const [
                           Icon(Icons.show_chart, color: Colors.blue),
                           SizedBox(width: 8),
                           Text(
@@ -50,12 +52,12 @@ class MedicationLogPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'Overall Adherence',
                         style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Row(
                         children: [
                           Expanded(
@@ -63,16 +65,16 @@ class MedicationLogPage extends StatelessWidget {
                               value: controller.adherence.value / 100,
                               minHeight: 7,
                               backgroundColor: Colors.blue[50],
-                              valueColor: AlwaysStoppedAnimation<Color>(
+                              valueColor: const AlwaysStoppedAnimation<Color>(
                                 Colors.blue,
                               ),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Text('${controller.adherence.value.round()}%'),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         children: [
                           Expanded(
@@ -81,18 +83,21 @@ class MedicationLogPage extends StatelessWidget {
                                 color: Colors.green[50],
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              padding: EdgeInsets.symmetric(vertical: 15),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
                               child: Column(
                                 children: [
-                                  Icon(Icons.check_circle, color: Colors.green),
-                                  SizedBox(height: 2),
+                                  const Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(height: 2),
                                   Text(
                                     'Taken',
-                                    style: TextStyle(color: Colors.green[800]),
+                                    style: TextStyle(color: Colors.green),
                                   ),
                                   Text(
                                     '${controller.takenDoses.value} doses',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -101,25 +106,25 @@ class MedicationLogPage extends StatelessWidget {
                               ),
                             ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
                                 color: Colors.red[50],
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              padding: EdgeInsets.symmetric(vertical: 15),
+                              padding: const EdgeInsets.symmetric(vertical: 15),
                               child: Column(
                                 children: [
-                                  Icon(Icons.cancel, color: Colors.red),
-                                  SizedBox(height: 2),
+                                  const Icon(Icons.cancel, color: Colors.red),
+                                  const SizedBox(height: 2),
                                   Text(
                                     'Missed',
-                                    style: TextStyle(color: Colors.red[800]),
+                                    style: TextStyle(color: Colors.red),
                                   ),
                                   Text(
                                     '${controller.missedDoses.value} doses',
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -134,7 +139,7 @@ class MedicationLogPage extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
@@ -145,17 +150,17 @@ class MedicationLogPage extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Filter Logs',
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Medication',
                           border: OutlineInputBorder(),
                         ),
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                             value: 'all',
                             child: Text('All Medications'),
@@ -163,13 +168,13 @@ class MedicationLogPage extends StatelessWidget {
                         ],
                         onChanged: (value) {},
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Status',
                           border: OutlineInputBorder(),
                         ),
-                        items: [
+                        items: const [
                           DropdownMenuItem(
                             value: 'all',
                             child: Text('All Status'),
@@ -181,21 +186,24 @@ class MedicationLogPage extends StatelessWidget {
                   ),
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   IconButton(
-                    icon: Icon(Icons.home),
+                    icon: const Icon(Icons.home),
                     onPressed: () => Get.offAllNamed('/home'),
                   ),
-                  IconButton(icon: Icon(Icons.medication), onPressed: () {}),
                   IconButton(
-                    icon: Icon(Icons.list_alt),
+                    icon: const Icon(Icons.medication),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.list_alt),
                     color: Colors.blue,
                     onPressed: () {},
                   ),
-                  IconButton(icon: Icon(Icons.person), onPressed: () {}),
+                  IconButton(icon: const Icon(Icons.person), onPressed: () {}),
                 ],
               ),
             ],
