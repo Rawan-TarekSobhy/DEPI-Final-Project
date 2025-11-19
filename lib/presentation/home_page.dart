@@ -22,6 +22,10 @@ class HomePage extends StatelessWidget {
             onPressed: () => Get.toNamed('/nerbyPharmacies'),
             child: const Text('Go to Nearby Pharmacies'),
           ),
+          ElevatedButton(
+            onPressed: () => Get.toNamed('/medicationLog'),
+            child: const Text('Log'),
+          ),
         ],
       ),
     );
