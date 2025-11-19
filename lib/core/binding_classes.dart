@@ -7,14 +7,12 @@ import 'package:reminder_app/controllers/nearby_pharmacies_controller.dart';
 import 'package:reminder_app/services/pharmacies_service.dart';
 import 'package:reminder_app/controllers/registration_controller.dart';
 
-
 class HomeBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut(() => HomeController());
   }
 }
-
 
 class SignUpBinding extends Bindings {
   @override
@@ -29,7 +27,6 @@ class LoginBinding extends Bindings {
     Get.lazyPut<LoginController>(() => LoginController());
   }
 }
-
 
 class NearbyPharmaciesBinding extends Bindings {
   @override
