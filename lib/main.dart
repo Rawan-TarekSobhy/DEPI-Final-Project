@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:reminder_app/presentation/medication_log_page.dart';
 import 'package:reminder_app/services/auth_service.dart';
 import 'package:reminder_app/core/binding_classes.dart';
 import 'package:reminder_app/services/connectivity_service.dart';
@@ -57,6 +58,11 @@ class MyApp extends StatelessWidget {
           name: '/nerbyPharmacies',
           page: () => NearbyPharmaciesPage(),
           binding: NearbyPharmaciesBinding(),
+        ),
+        GetPage(
+          name: '/medicationLog',
+          page: () => MedicationLogPage(),
+          // Add binding if needed
         ),
       ],
     );
