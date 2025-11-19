@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/medicationLog',
           page: () => MedicationLogPage(),
-          // Add binding if needed
+          binding: MedicationLogBinding(),
         ),
       ],
     );
