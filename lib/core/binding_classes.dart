@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:reminder_app/controllers/medication_log_controller.dart';
 import 'package:reminder_app/services/connectivity_service.dart';
 
 import 'package:reminder_app/controllers/home_controller.dart';
@@ -44,5 +45,12 @@ class NearbyPharmaciesBinding extends Bindings {
         () => NearbyPharmaciesController(),
       );
     }
+  }
+}
+
+class MedicationLogBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<MedicationLogController>(() => MedicationLogController());
   }
 }
