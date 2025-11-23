@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:reminder_app/data/app_database.dart';
+import 'package:reminder_app/core/init_local_db.dart';
 import 'package:reminder_app/services/Supabase_service.dart';
 import 'package:reminder_app/services/auth_service.dart';
 import 'package:reminder_app/core/binding_classes.dart';
@@ -16,8 +13,6 @@ import 'package:reminder_app/views/nearby_pharmacies_page.dart';
 import 'package:reminder_app/services/pharmacies_service.dart';
 import 'package:reminder_app/views/registration_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:path/path.dart';
-import 'package:flutter/services.dart';
 
 
 
@@ -35,32 +30,6 @@ Future<void> main() async {
 
 final cloud = Supabase.instance.client;
 
-Future<void> initDatabase() async {
-  await copyDatabase();
-
-  //get database object
-  //connect to database
-  final dir = await getApplicationDocumentsDirectory();
-  final dbPath = join(dir.path, 'medication_data.db');
-
-  database = await $FloorAppDatabase.databaseBuilder(dbPath).build();
-}
-
-late final AppDatabase database;
-
-Future<void> copyDatabase() async {
-  final dir = await getApplicationDocumentsDirectory();
-  final path = join(dir.path, 'medication_data.db'); // c://app1/movies.db.db
-  // print(dir);
-
-  if (File(path).existsSync()) return;
-
-  //copy from assets to this path
-  ByteData data = await rootBundle.load('assets/database/medication_data.db');
-  List<int> bytes =
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  await File(path).writeAsBytes(bytes);
-}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -69,7 +38,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: '/addMedication',
+      initialRoute: '/medicationLog',
       initialBinding: BindingsBuilder(() {
         Get.lazyPut(() => AuthService(), fenix: true);
         Get.lazyPut(() => ConnectivityService(), fenix: true);
@@ -107,6 +76,7 @@ class MyApp extends StatelessWidget {
           page: () => AddMedicationPage(),
           binding: AddMedicationBinding(),
         ),
+
       ],
     );
   }
