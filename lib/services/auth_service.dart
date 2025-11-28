@@ -101,6 +101,14 @@ import 'package:supabase_flutter/supabase_flutter.dart' as supabase_flutter;
 class AuthService {
   supabase_flutter.User? get currentUser => cloud.auth.currentUser;
   String? get currentUserId => cloud.auth.currentUser?.id;
+  Future<void> logout() async {
+  try {
+    await cloud.auth.signOut();
+  } catch (e) {
+    print('Error during logout: $e');
+  }
+}
+
 
   Future<void> login(String email, String password) async {
     try {

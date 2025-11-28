@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
@@ -159,23 +160,87 @@ class MedicationsPage extends GetView<MedicationsController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Name + dosage + frequency
-          Text(
-            med.name,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF2C3E50),
-            ),
+          // ===== الصورة + الاسم + الجرعة =====
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // صورة الدواء قابلة للتكبير
+              GestureDetector(
+                onTap: () {
+                  if (med.imageUrl != null && med.imageUrl!.isNotEmpty) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return Dialog(
+                          insetPadding: const EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: InteractiveViewer(
+                              minScale: 1,
+                              maxScale: 4,
+                              child: Image.file(
+                                File(med.imageUrl!),
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
+                },
+                child: Container(
+                  width: 56,
+                  height: 56,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: const Color(0xFFE3F2FD),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: (med.imageUrl != null && med.imageUrl!.isNotEmpty)
+                      ? Image.file(File(med.imageUrl!), fit: BoxFit.cover)
+                      : const Icon(
+                          Icons.medication,
+                          color: Color(0xFF42A5F5),
+                          size: 30,
+                        ),
+                ),
+              ),
+
+              // النصوص (الاسم + الجرعة + التكرار)
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      med.name,
+                      style: const TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF2C3E50),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${med.dosage} • ${med.frequency}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Color(0xFF7F8C8D),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            '${med.dosage} • ${med.frequency}',
-            style: const TextStyle(fontSize: 13, color: Color(0xFF7F8C8D)),
-          ),
+
           const SizedBox(height: 12),
 
-          // Next dose + Duration
+          // ===== Next dose + Duration =====
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -251,7 +316,7 @@ class MedicationsPage extends GetView<MedicationsController> {
             ],
           ),
 
-          // Notes
+          // ===== Notes (لو موجودة) =====
           if (med.notes != null && med.notes!.isNotEmpty) ...[
             const SizedBox(height: 10),
             Container(
@@ -279,9 +344,10 @@ class MedicationsPage extends GetView<MedicationsController> {
               ),
             ),
           ],
+
           const SizedBox(height: 12),
 
-          // Buttons
+          // ===== أزرار Edit / Delete =====
           Row(
             children: [
               Expanded(
@@ -657,33 +723,33 @@ class MedicationsPage extends GetView<MedicationsController> {
                         // Add Dose Time Button
                         GestureDetector(
                           onTap: () async {
-                        final selectedTime = await showTimePicker(
-                          context: ctx,
-                          initialTime: TimeOfDay.now(),
-                          builder: (BuildContext context, Widget? child) {
-                            return MediaQuery(
-                              data: MediaQuery.of(
-                                context,
-                              ).copyWith(alwaysUse24HourFormat: false),
-                              child: Theme(
-                                data: ThemeData.light().copyWith(
-                                  colorScheme: const ColorScheme.light(
-                                    primary: Color(0xFF4FC3F7),
-                                    onPrimary: Colors.white,
-                                    surface: Colors.white,
-                                    onSurface: Colors.black87,
+                            final selectedTime = await showTimePicker(
+                              context: ctx,
+                              initialTime: TimeOfDay.now(),
+                              builder: (BuildContext context, Widget? child) {
+                                return MediaQuery(
+                                  data: MediaQuery.of(
+                                    context,
+                                  ).copyWith(alwaysUse24HourFormat: false),
+                                  child: Theme(
+                                    data: ThemeData.light().copyWith(
+                                      colorScheme: const ColorScheme.light(
+                                        primary: Color(0xFF4FC3F7),
+                                        onPrimary: Colors.white,
+                                        surface: Colors.white,
+                                        onSurface: Colors.black87,
+                                      ),
+                                    ),
+                                    child: Center(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        child: child!,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                child: Center(
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: child!,
-                                  ),
-                                ),
-                              ),
+                                );
+                              },
                             );
-                          },
-                        );
 
                             if (selectedTime != null) {
                               controller.addDoseTimeForEdit(selectedTime);
