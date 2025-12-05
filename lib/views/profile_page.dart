@@ -539,6 +539,7 @@ void _showEditDialog(BuildContext context, User u) {
                       'Email',
                       emailCtrl,
                       keyboardType: TextInputType.emailAddress,
+                      read: true
                     ),
 
                     const SizedBox(height: 12),
@@ -669,6 +670,7 @@ Widget _textField(
     String label,
     TextEditingController controller, {
       TextInputType keyboardType = TextInputType.text,
+      final read =false
     }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -682,6 +684,7 @@ Widget _textField(
       ),
       const SizedBox(height: 4),
       TextField(
+        readOnly: read,
         controller: controller,
         keyboardType: keyboardType,
         decoration: InputDecoration(
