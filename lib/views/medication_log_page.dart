@@ -409,6 +409,45 @@ class MedicationLogPage extends StatelessWidget {
               },
             ),
           ),
+          const SizedBox(height: 12),
+Row(
+  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  children: [
+           Text(
+            'Range',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: theme.primaryColor,
+            ),
+          ),
+    Obx(() {
+      return DropdownButton<int>(
+        icon: Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: theme.primaryColor,
+                size: 20,
+              ),
+        value: controller.selectedRange.value,
+        dropdownColor: theme.cardColor,
+        underline: const SizedBox.shrink(),
+        items: const [
+          DropdownMenuItem(value: 7, child: Text('Last 7 days')),
+          DropdownMenuItem(value: 30, child: Text('Last 30 days')),
+          DropdownMenuItem(value: 90, child: Text('Last 90 days')),
+          DropdownMenuItem(value: 0, child: Text('All time')),
+        ],
+        onChanged: (v) {
+          if (v != null) {
+            controller.changeRange(v);
+          }
+        },
+      );
+    }),
+  ],
+),
+// const SizedBox(height: 5),
+
         ],
       ),
     );

@@ -23,53 +23,67 @@ class NearbyPharmaciesController extends GetxController {
     fetchNearbyPharmacies();
   }
 
+    Future<void> fetchNearbyPharmacies() async {
+  try {
+    isLoading.value = true;
+    errorMessage.value = null;
 
-  Future<void> fetchNearbyPharmacies() async {
-    try {
-      isLoading.value = true;
-      errorMessage.value = null;
+    final pos = await getCurrentPosition();
+    userPosition = pos;
 
-      final pos = await getCurrentPosition();
-      userPosition = pos;
+    final response = await service.getNearbyPharmacies(
+      lat: pos.latitude,
+      lon: pos.longitude,
+    );
 
-      final response = await service.getNearbyPharmacies(
-        lat: pos.latitude,
-        lon: pos.longitude,
-      );
-
-      if (response == null) {
-        pharmacies.clear();
-        errorMessage.value = 'No pharmacies found nearby';
-        return;
-      }
-
-      final elements = response.elements;
-
-      if (userPosition != null) {
-        elements.sort((a, b) {
-          final da = Geolocator.distanceBetween(
-            userPosition!.latitude,
-            userPosition!.longitude,
-            a.lat,
-            a.lon,
-          );
-          final db = Geolocator.distanceBetween(
-            userPosition!.latitude,
-            userPosition!.longitude,
-            b.lat,
-            b.lon,
-          );
-          return da.compareTo(db);   
-        });
-      }
-
-      pharmacies.assignAll(elements);
-    } catch (e) {
-      errorMessage.value = e.toString();
-    } finally {
-      isLoading.value = false;
+    if (response == null) {
+      pharmacies.clear();
+      errorMessage.value = 'No pharmacies found nearby';
+      return;
     }
+
+    final elements = response.elements;
+    if (userPosition != null) {
+      elements.sort((a, b) {
+        final da = Geolocator.distanceBetween(
+          userPosition!.latitude,
+          userPosition!.longitude,
+          a.lat,
+          a.lon,
+        );
+        final db = Geolocator.distanceBetween(
+          userPosition!.latitude,
+          userPosition!.longitude,
+          b.lat,
+          b.lon,
+        );
+        return da.compareTo(db);
+      });
+    }
+    pharmacies.assignAll(elements);
+  } on TimeoutException {
+    errorMessage.value =
+        'Request took too long.\nPlease check your internet and try again.';
+  } catch (e) {
+    final msg = e.toString();
+
+    if (msg.contains('SocketException') ||
+        msg.contains('Failed host lookup') ||
+        msg.contains('No Internet') ||
+        msg.contains('network is unreachable')) {
+      errorMessage.value =
+          'No internet connection.\nPlease check your network and try again.';
+    } else if (msg.contains('timeout')) {
+      errorMessage.value =
+          'Request timed out.\nPlease try again in a moment.';
+    } else {
+      errorMessage.value =
+          'Failed to load nearby pharmacies.\nPlease try again later.';
+    }
+  } finally {
+    isLoading.value = false;
   }
+}
 
   // ============= Search =============
 

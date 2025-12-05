@@ -23,20 +23,37 @@ class MedicationLogController extends GetxController {
 
   late DateTime fromDate;
   late DateTime toDate;
+  final selectedRange = 7.obs; 
 
-  @override
-  void onInit() {
-    super.onInit();
-    final now = DateTime.now();
-    // افتراضيًا: آخر 7 أيام
-    fromDate =
-        DateTime(now.year, now.month, now.day).subtract(const Duration(days: 6));
-    toDate = DateTime(now.year, now.month, now.day)
-        .add(const Duration(days: 1))
-        .subtract(const Duration(milliseconds: 1));
+@override
+void onInit() {
+  super.onInit();
+  changeRange(7);
+}
 
-    loadLog();
+  void changeRange(int days) {
+  selectedRange.value = days;
+  _setRange(days);
+}
+
+void _setRange(int days) {
+  final now = DateTime.now();
+
+  if (days == 0) { 
+    fromDate = DateTime(2000, 1, 1); 
+  } else {
+    // آخر N يوم
+    final today = DateTime(now.year, now.month, now.day);
+    fromDate = today.subtract(Duration(days: days - 1));
   }
+
+  toDate = DateTime(now.year, now.month, now.day)
+      .add(const Duration(days: 1))
+      .subtract(const Duration(milliseconds: 1));
+
+  loadLog();   
+}
+
 
   Future<void> loadLog() async {
     final userId = authService.currentUserId;
