@@ -13,6 +13,7 @@ import 'package:reminder_app/services/medications_service.dart';
 import 'package:reminder_app/services/notification_service.dart';
 import 'package:reminder_app/services/schedules_service.dart';
 import 'package:reminder_app/services/records_service.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class AddMedicationController extends GetxController {
   late final AuthService authService = Get.find<AuthService>();
@@ -40,6 +41,11 @@ class AddMedicationController extends GetxController {
   final successMessage = RxnString();
 
   final doseTimes = <TimeOfDay>[].obs;
+
+  // Speech to Text
+  final SpeechToText speech = SpeechToText();
+  final isListening = false.obs;
+
 
   // Options
   final List<String> frequencyOptions = [
@@ -369,12 +375,47 @@ class AddMedicationController extends GetxController {
     }
   }
 
+  Future<void> toggleNameListening() async {
+  if (!isListening.value) {
+    // بداية الاستماع
+    final available = await speech.initialize(
+      onError: (error) => print('Speech error: $error'),
+      onStatus: (status) => print('Speech status: $status'),
+    );
+    
+    if (!available) {
+      Get.snackbar(
+        'Error',
+        'Speech recognition not available',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    isListening.value = true;
+    
+    speech.listen(
+      onResult: (result) {
+        nameController.text = result.recognizedWords;
+      },
+      localeId: 'ar-EG', // غيّره لـ 'en-US' لو عايز إنجليزي
+      listenMode: ListenMode.confirmation,
+    );
+  } else {
+    // إيقاف الاستماع
+    isListening.value = false;
+    await speech.stop();
+  }
+}
+
+
   // ====== Lifecycle ======
   @override
   void onClose() {
     nameController.dispose();
     dosageController.dispose();
     notesController.dispose();
+    speech.cancel(); // تنضيف الـspeech عند إغلاق الكنترولر
     frequency.value = 'Select frequency';
     duration.value = 'Select duration';
     imageFile.value = null;

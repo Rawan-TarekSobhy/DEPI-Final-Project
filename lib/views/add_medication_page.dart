@@ -319,10 +319,11 @@ class AddMedicationPage extends GetView<AddMedicationController> {
             ],
           ),
           const SizedBox(height: 15.0),
-          _buildInputFieldWithController(
+          _buildInputFieldWithMicWithController(
             label: 'Medication Name *',
             hint: 'e.g., Aspirin',
             controller: controller.nameController,
+            withMic: true,
           ),
           const SizedBox(height: 16.0),
           _buildDosageField(controller),
@@ -331,7 +332,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
           const SizedBox(height: 16.0),
           _buildDurationDropdown(controller),
           const SizedBox(height: 16.0),
-          _buildInputFieldWithController(
+          _buildInputFieldWithMicWithController(
             label: 'Notes (Optional)',
             hint: 'e.g., Take with food',
             controller: controller.notesController,
@@ -584,41 +585,47 @@ class AddMedicationPage extends GetView<AddMedicationController> {
     );
   }
 
-  Widget _buildInputFieldWithController({
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    TextInputType keyboardType = TextInputType.text,
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Get.theme.primaryColor,
-          ),
+Widget _buildInputFieldWithMicWithController({
+  required String label,
+  required String hint,
+  required TextEditingController controller,
+  TextInputType keyboardType = TextInputType.text,
+  int maxLines = 1,
+  bool withMic = false,
+}) {
+  final theme = Get.theme;
+  final c = Get.find<AddMedicationController>();
+
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: theme.primaryColor,
         ),
-        const SizedBox(height: 8),
-        TextFormField(
+      ),
+      const SizedBox(height: 8),
+      Obx(() {
+        final listening = c.isListening.value;
+        return TextFormField(
           controller: controller,
           keyboardType: keyboardType,
           maxLines: maxLines,
           style: TextStyle(
             fontSize: 14,
-            color: Get.theme.textTheme.bodyLarge!.color,
+            color: theme.textTheme.bodyLarge!.color,
           ),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
-              color: Get.theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
+              color: theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
               fontSize: 14,
             ),
             filled: true,
-            fillColor: Get.theme.scaffoldBackgroundColor,
+            fillColor: theme.scaffoldBackgroundColor,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 12,
@@ -630,19 +637,30 @@ class AddMedicationPage extends GetView<AddMedicationController> {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
-                color: Get.theme.textTheme.bodyMedium!.color!.withOpacity(0.2),
+                color: theme.textTheme.bodyMedium!.color!.withOpacity(0.2),
                 width: 1,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              borderSide: BorderSide(color: Get.theme.primaryColor, width: 2),
+              borderSide: BorderSide(color: theme.primaryColor, width: 2),
             ),
+            suffixIcon: withMic
+                ? IconButton(
+                    icon: Icon(
+                      listening ? Icons.mic : Icons.mic_none,
+                      color: listening ? theme.primaryColor : null,
+                    ),
+                    onPressed: c.toggleNameListening,
+                  )
+                : null,
           ),
-        ),
-      ],
-    );
-  }
+        );
+      }),
+    ],
+  );
+}
+
 
   Widget _buildDosageField(AddMedicationController controller) {
     return Column(

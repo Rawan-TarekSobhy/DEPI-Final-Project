@@ -117,6 +117,7 @@ class ChatbotController extends GetxController {
         partialResults: true,
         cancelOnError: true,
         listenMode: stt.ListenMode.confirmation,
+        localeId: 'ar-EG', // غيّره لـ 'en-US' لو عايز إنجليزي
       );
     } catch (e) {
       print('❌ Error starting speech recognition: $e');
