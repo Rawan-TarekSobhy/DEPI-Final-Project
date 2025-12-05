@@ -65,17 +65,20 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   StreamSubscription? _globalConnectivitySub;
   bool _wasOnline = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      startGlobalConnectivityListener();
-    });
-  }
+@override
+void initState() {
+  super.initState();
+  WidgetsBinding.instance.addObserver(this);  
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    startGlobalConnectivityListener();   
+    _checkInitialConnection();         
+  });
+}
 
   Future<void> startGlobalConnectivityListener() async {
     try {
@@ -105,12 +108,40 @@ class MyAppState extends State<MyApp> {
       print('Failed to start listener: $e');
     }
   }
+  Future<void> _checkInitialConnection() async {
+  try {
+    final connectivityService = Get.find<ConnectivityService>();
+    final syncService = Get.find<SyncService>();
 
-  @override
-  void dispose() {
-    _globalConnectivitySub?.cancel();
-    super.dispose();
+    final isOnline = await connectivityService.connected();
+
+    if (isOnline) {
+      try {
+        await syncService.syncAll();
+      } catch (e) {
+        print('Sync failed: $e');
+      }
+    } 
+    _wasOnline = isOnline;
+  } catch (e) {
+    print('Failed to check initial connection: $e');
   }
+}
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) async {
+  if (state == AppLifecycleState.resumed) {
+    await _checkInitialConnection();
+  }
+}
+
+
+@override
+void dispose() {
+  WidgetsBinding.instance.removeObserver(this);
+  _globalConnectivitySub?.cancel();
+  super.dispose();
+}
+
 
   @override
   Widget build(BuildContext context) {
