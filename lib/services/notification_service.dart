@@ -66,6 +66,7 @@
 
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:reminder_app/core/init_local_db.dart';
 import 'package:reminder_app/data/entity/medications.dart';
 
@@ -74,6 +75,8 @@ class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   factory NotificationService() => _instance;
   NotificationService._internal();
+  final box=GetStorage();
+  final String _dndKey = 'is_dnd_active';
 
 Future<void> initialize() async {
   await AwesomeNotifications().initialize(
@@ -126,6 +129,12 @@ Future<void> scheduleNotification({
   required int medId,
   required String medicationName,
 }) async {
+  bool isDnd = box.read(_dndKey) ?? false;
+
+  if (isDnd) {
+    print('🚫 Notification Skipped: DND mode is ON');
+    return;
+  }
   print('🔔 Scheduling notification:');
   print('   ID: $id');
   print('   Medication: $medicationName');
@@ -178,7 +187,7 @@ Future<void> scheduleNotification({
       preciseAlarm: true,
     ),
   );
-  
+
   print('✅ Notification scheduled successfully');
 }
 
@@ -268,6 +277,27 @@ Future<void> scheduleNotification({
 
   /// Cancel all app notifications
   Future<void> cancelAllNotifications() async {
+    await AwesomeNotifications().dismissAllNotifications();
     await AwesomeNotifications().cancelAll();
   }
+  bool get currentDndStatus => box.read(_dndKey) ?? false;
+
+  Future<void> enableDonotdisturb()
+  async {
+  box.write(_dndKey, true);
+      await cancelAllNotifications();
+    }
+    Future<void> disableDonotdisturb(String userId)
+    async {
+      box.write(_dndKey, false);
+      try {
+        final allMeds = await database.medicationsDao.getMedicationsByUser(userId);
+        for (var med in allMeds) {
+          await rescheduleMedicationNotifications(med);
+        }
+      } catch (e) {
+        print("Error restarting reminders: $e");
+      }
+    }
+
 }
