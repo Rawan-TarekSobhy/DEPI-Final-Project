@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:reminder_app/core/init_local_db.dart';
@@ -21,7 +22,8 @@ class HomeController extends GetxController {
   final todaysRecords = <IntakeRecord>[].obs;
   final todaysMeds = <Medication>[].obs;
   final isLoading = false.obs;
-
+  var isDndActive=false.obs;
+  final userid=AuthService().currentUserId;
   late final AuthService authService = Get.find<AuthService>();
   late final ConnectivityService _connectivityService = Get.find<ConnectivityService>();
   late final RecordsService recordsService = Get.find<RecordsService>();
@@ -36,13 +38,35 @@ class HomeController extends GetxController {
     loadTodayDoses();
     themeService = ThemeService();
     isDark.value = themeService.isDarkMode();
+    isDndActive.value = NotificationService().currentDndStatus;
   }
 
     void toggleTheme() {
     ThemeService().switchTheme();
     isDark.value = ThemeService().isDarkMode();
   }
+  Future<void> toggleDndMode() async {
 
+    isDndActive.value = !isDndActive.value;
+
+    if (isDndActive.value == true) {
+      await NotificationService().enableDonotdisturb();
+      Get.snackbar(
+        'Mode Active',
+        "Don't Disturb Mode ON 🔇",
+        backgroundColor: Colors.red,
+        colorText: Colors.black,
+      );
+    } else {
+      await NotificationService().disableDonotdisturb(userid!);
+      Get.snackbar(
+        'Mode Disabled',
+        "Notifications Enabled 🔔",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    }
+  }
   void updateTime() {
     final now = DateTime.now();
     currentTime.value = DateFormat('hh:mm a').format(now);

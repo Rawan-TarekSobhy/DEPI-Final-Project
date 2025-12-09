@@ -13,7 +13,7 @@ class ChatbotService {
     ),
   );
 
-  static const String _apiKey = 'AIzaSyA1MvCetq004SSeZDYp9WiEd3gUK6R6VcE';
+  static const String _apiKey = 'AIzaSyBXoGb4X8_TjNCmGdey7l1aJ3VXJh-JIuI';
 
   /// Send message with medical context and enhanced error handling
   Future<String> send(

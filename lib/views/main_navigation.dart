@@ -17,19 +17,24 @@ class MainNavigation extends GetView<NavigationController> {
 
     // ✅ List of pages (4 tabs only)
     final List<Widget> pages = [
-        HomePage(),
-        MedicationsPage(),
-        MedicationLogPage(),
-        ProfilePage(),
+      HomePage(),
+      MedicationsPage(),
+      MedicationLogPage(),
+      ProfilePage(),
     ];
 
     return Obx(
-      () => Scaffold(
-        body: IndexedStack(
-          index: controller.selectedIndex.value,
+          () => Scaffold(
+        body: PageView(
+          controller: controller.pageController, // Use the controller from NavigationController
+          physics: const NeverScrollableScrollPhysics(), // Prevent manual swipe
+          onPageChanged: (index) {
+            controller.selectedIndex.value = index;
+
+          },
           children: pages,
         ),
-        
+        // [END: UPDATE]
         // ✅ FloatingActionButton (Chatbot)
         // floatingActionButton: Container(
         //   width: 60,
@@ -68,7 +73,7 @@ class MainNavigation extends GetView<NavigationController> {
         //     ),
         //   ),
         // ),
-        
+
         // ✅ NavigationBar (4 destinations)
         bottomNavigationBar: Container(
           decoration: BoxDecoration(

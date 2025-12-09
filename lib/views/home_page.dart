@@ -620,9 +620,16 @@ Widget _buildHeader(
               ),
             ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.notifications_none,
-              color: theme.iconTheme.color,
+            Obx(
+                  () => IconButton(
+                icon: Icon(
+                  controller.isDndActive.value
+                      ? Icons.notifications_off_outlined
+                      : Icons.notifications_none,
+                  color: theme.iconTheme.color,
+                ),
+                onPressed: controller.toggleDndMode,
+              ),
             ),
           ],
         ),
