@@ -670,7 +670,7 @@ Widget _textField(
     String label,
     TextEditingController controller, {
       TextInputType keyboardType = TextInputType.text,
-      final read =false
+       bool read=false
     }) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
