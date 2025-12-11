@@ -17,14 +17,14 @@ class MainNavigation extends GetView<NavigationController> {
 
     // ✅ List of pages (4 tabs only)
     final List<Widget> pages = [
-      HomePage(),
-      MedicationsPage(),
-      MedicationLogPage(),
-      ProfilePage(),
+        HomePage(),
+        MedicationsPage(),
+        MedicationLogPage(),
+        ProfilePage(),
     ];
 
     return Obx(
-          () => Scaffold(
+      () => Scaffold(
         body: PageView(
           controller: controller.pageController, // Use the controller from NavigationController
           physics: const NeverScrollableScrollPhysics(), // Prevent manual swipe
@@ -73,7 +73,7 @@ class MainNavigation extends GetView<NavigationController> {
         //     ),
         //   ),
         // ),
-
+        
         // ✅ NavigationBar (4 destinations)
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
