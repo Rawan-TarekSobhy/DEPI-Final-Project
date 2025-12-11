@@ -133,26 +133,72 @@ class AddMedicationController extends GetxController {
   }
 
   // ====== Dose times ======
+  // استبدل دالة addDoseTime الحالية بهذه النسخة المحدثة
   void addDoseTime(TimeOfDay time) {
-    if (maxDoseTimesAllowed > 0 && doseTimes.length >= maxDoseTimesAllowed) {
-      errorMessage.value =
-          'You can only add $maxDoseTimesAllowed dose times for this frequency.';
+    // إذا لم يتم اختيار التكرار بعد
+    if (frequency.value == 'Select frequency') {
+      errorMessage.value = 'Please select frequency first';
       return;
     }
 
-    final exists = doseTimes.any(
-      (t) => t.hour == time.hour && t.minute == time.minute,
-    );
-    if (!exists) {
-      doseTimes.add(time);
-      doseTimes.sort((a, b) {
-        final aMinutes = a.hour * 60 + a.minute;
-        final bMinutes = b.hour * 60 + b.minute;
-        return aMinutes.compareTo(bMinutes);
-      });
+    if (frequency.value == 'As needed') {
+      _addManualDose(time);
+    }
+    else {
+      _calculateAutoSchedule(time);
     }
   }
 
+  void _addManualDose(TimeOfDay time) {
+    final exists = doseTimes.any(
+          (t) => t.hour == time.hour && t.minute == time.minute,
+    );
+
+    if (!exists) {
+      doseTimes.add(time);
+      _sortDoseTimes();
+    } else {
+      errorMessage.value = 'This time is already added.';
+    }
+  }
+
+  void _calculateAutoSchedule(TimeOfDay startTime) {
+    doseTimes.clear();
+
+    int dosesCount = maxDoseTimesAllowed; // نستخدم الـ getter الموجود عندك مسبقاً
+
+    if (dosesCount == 1) {
+      doseTimes.add(startTime);
+      return;
+    }
+
+    int intervalHours = 24 ~/ dosesCount;
+
+    final now = DateTime.now();
+    DateTime tempDate = DateTime(
+        now.year,
+        now.month,
+        now.day,
+        startTime.hour,
+        startTime.minute
+    );
+
+    for (int i = 0; i < dosesCount; i++) {
+      DateTime nextDose = tempDate.add(Duration(hours: i * intervalHours));
+
+      doseTimes.add(TimeOfDay.fromDateTime(nextDose));
+    }
+
+    _sortDoseTimes();
+  }
+
+  void _sortDoseTimes() {
+    doseTimes.sort((a, b) {
+      final aMinutes = a.hour * 60 + a.minute;
+      final bMinutes = b.hour * 60 + b.minute;
+      return aMinutes.compareTo(bMinutes);
+    });
+  }
   void removeDoseTime(int index) {
     if (index >= 0 && index < doseTimes.length) {
       doseTimes.removeAt(index);
@@ -407,7 +453,6 @@ class AddMedicationController extends GetxController {
     await speech.stop();
   }
 }
-
 
   // ====== Lifecycle ======
   @override
