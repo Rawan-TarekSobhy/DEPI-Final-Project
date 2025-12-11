@@ -37,9 +37,7 @@ class NavigationController extends GetxController {
 
   // Navigate to specific index
   void navigateToIndex(int index) {
-    if (index == selectedIndex.value) return; // Prevent unnecessary reloads/nav
-
-    // Use pageController to animate the transition
+    selectedIndex.value = index;
     pageController.animateToPage( // [UPDATE THIS LINE]
       index,
       duration: const Duration(milliseconds: 300), // [ADD THIS LINE] Short animation duration
@@ -47,11 +45,6 @@ class NavigationController extends GetxController {
     );
 
     selectedIndex.value = index; // [MOVE THIS LINE] Update index after animation call
-
-    if(index == 2){
-      final c = Get.find<MedicationLogController>();
-      c.loadLog();
-    }
     if(index == 0){
       final c = Get.find<HomeController>();
       c.loadTodayDoses();
@@ -59,6 +52,10 @@ class NavigationController extends GetxController {
     if(index == 1){
       final c = Get.find<MedicationsController>();
       c.loadMedications();
+    }
+    if(index == 2){
+      final c = Get.find<MedicationLogController>();
+      c.loadLog();
     }
   }
 
@@ -70,7 +67,7 @@ class NavigationController extends GetxController {
       pageController.animateToPage(
         index,
         duration: const Duration(milliseconds: 450),
-        curve: Curves.bounceOut,
+        curve: Curves.easeInOutCubic,
 
       );
       selectedIndex.value = index; // [UPDATE THIS LINE]

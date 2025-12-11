@@ -15,16 +15,17 @@ import 'package:reminder_app/services/schedules_service.dart';
 import 'package:reminder_app/services/records_service.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import 'navigation_controller.dart';
+
 class AddMedicationController extends GetxController {
   late final AuthService authService = Get.find<AuthService>();
-  late final ConnectivityService connectivityService =
-      Get.find<ConnectivityService>();
-  late final MedicationsService medicationsService =
-      Get.find<MedicationsService>();
+  late final ConnectivityService connectivityService = Get.find<ConnectivityService>();
+  late final MedicationsService medicationsService = Get.find<MedicationsService>();
   late final SchedulesService schedulesService = Get.find<SchedulesService>();
   late final RecordsService recordsService = Get.find<RecordsService>();
 
   final picker = ImagePicker();
+  final SpeechToText speech = SpeechToText();
 
   final nameController = TextEditingController();
   final dosageController = TextEditingController();
@@ -34,20 +35,13 @@ class AddMedicationController extends GetxController {
   final duration = 'Select duration'.obs;
 
   final imageFile = Rx<XFile?>(null);
-
+  final isListening = false.obs;
   final isLoading = false.obs;
 
   final errorMessage = RxnString();
-  final successMessage = RxnString();
 
   final doseTimes = <TimeOfDay>[].obs;
 
-  // Speech to Text
-  final SpeechToText speech = SpeechToText();
-  final isListening = false.obs;
-
-
-  // Options
   final List<String> frequencyOptions = [
     'Select frequency',
     'Once daily',
@@ -68,35 +62,23 @@ class AddMedicationController extends GetxController {
 
   int get maxDoseTimesAllowed {
     switch (frequency.value) {
-      case 'Once daily':
-        return 1;
-      case 'Twice daily (2x/day)':
-        return 2;
-      case 'Three times daily (3x/day)':
-        return 3;
-      case 'Four times daily (4x/day)':
-        return 4;
-      case 'As needed':
-        return 0;
-      default:
-        return 0;
+      case 'Once daily': return 1;
+      case 'Twice daily (2x/day)': return 2;
+      case 'Three times daily (3x/day)': return 3;
+      case 'Four times daily (4x/day)': return 4;
+      case 'As needed': return 0;
+      default: return 0;
     }
   }
 
   int durationInDays(String value) {
     switch (value) {
-      case '7 days':
-        return 7;
-      case '14 days':
-        return 14;
-      case '30 days':
-        return 30;
-      case '90 days':
-        return 90;
-      case 'Ongoing':
-        return 90;
-      default:
-        return 30;
+      case '7 days': return 7;
+      case '14 days': return 14;
+      case '30 days': return 30;
+      case '90 days': return 90;
+      case 'Ongoing': return 90;
+      default: return 30;
     }
   }
 
@@ -109,11 +91,80 @@ class AddMedicationController extends GetxController {
     imageFile.value = null;
     doseTimes.clear();
     errorMessage.value = null;
-    successMessage.value = null;
     isLoading.value = false;
   }
 
-  // ====== Image ======
+  // ====== Logic: Frequency Change (Auto-Schedule) ======
+  void onFrequencyChanged(String? newValue) {
+    if (newValue == null) return;
+    frequency.value = newValue;
+    errorMessage.value = null;
+
+    if (doseTimes.isEmpty) return;
+    if (newValue == 'As needed') return;
+
+    final firstTime = doseTimes.first;
+    _regenerateAutoSchedule(startTime: firstTime);
+  }
+
+  // ====== Logic: Add Dose Time ======
+  void addDoseTime(TimeOfDay time) {
+    if (frequency.value == 'Select frequency') {
+      if (doseTimes.isEmpty) {
+        doseTimes.add(time);
+      } else {
+        doseTimes[0] = time;
+      }
+      return;
+    }
+
+    if (frequency.value == 'As needed') {
+      final exists = doseTimes.any((t) => t.hour == time.hour && t.minute == time.minute);
+      if (!exists) {
+        doseTimes.add(time);
+        _sortDoseTimes();
+      }
+    } else {
+      _regenerateAutoSchedule(startTime: time);
+    }
+  }
+
+  void _regenerateAutoSchedule({required TimeOfDay startTime}) {
+    doseTimes.clear();
+    int count = maxDoseTimesAllowed;
+    if (count <= 0) return;
+
+    if (count == 1) {
+      doseTimes.add(startTime);
+      return;
+    }
+
+    int interval = 24 ~/ count;
+    final now = DateTime.now();
+    DateTime base = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
+
+    for (int i = 0; i < count; i++) {
+      DateTime next = base.add(Duration(hours: i * interval));
+      doseTimes.add(TimeOfDay.fromDateTime(next));
+    }
+    _sortDoseTimes();
+  }
+
+  void removeDoseTime(int index) {
+    if (index >= 0 && index < doseTimes.length) {
+      doseTimes.removeAt(index);
+    }
+  }
+
+  void _sortDoseTimes() {
+    doseTimes.sort((a, b) {
+      final aMinutes = a.hour * 60 + a.minute;
+      final bMinutes = b.hour * 60 + b.minute;
+      return aMinutes.compareTo(bMinutes);
+    });
+  }
+
+  // ====== Image Logic ======
   Future<bool> pickImageFromGallery() async {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
@@ -132,76 +183,33 @@ class AddMedicationController extends GetxController {
     return false;
   }
 
-  // ====== Dose times ======
-  // استبدل دالة addDoseTime الحالية بهذه النسخة المحدثة
-  void addDoseTime(TimeOfDay time) {
-    // إذا لم يتم اختيار التكرار بعد
-    if (frequency.value == 'Select frequency') {
-      errorMessage.value = 'Please select frequency first';
-      return;
-    }
-
-    if (frequency.value == 'As needed') {
-      _addManualDose(time);
-    }
-    else {
-      _calculateAutoSchedule(time);
+  Future<String?> saveImageLocally(XFile imageFile) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${imageFile.name}';
+      final localPath = '${directory.path}/$fileName';
+      await File(imageFile.path).copy(localPath);
+      return localPath;
+    } catch (e) {
+      errorMessage.value = 'Error saving image: $e';
+      return null;
     }
   }
 
-  void _addManualDose(TimeOfDay time) {
-    final exists = doseTimes.any(
-          (t) => t.hour == time.hour && t.minute == time.minute,
-    );
-
-    if (!exists) {
-      doseTimes.add(time);
-      _sortDoseTimes();
+  // ====== Speech Logic ======
+  Future<void> toggleNameListening() async {
+    if (!isListening.value) {
+      final available = await speech.initialize();
+      if (available) {
+        isListening.value = true;
+        speech.listen(
+          onResult: (result) => nameController.text = result.recognizedWords,
+          localeId: 'ar-EG',
+        );
+      }
     } else {
-      errorMessage.value = 'This time is already added.';
-    }
-  }
-
-  void _calculateAutoSchedule(TimeOfDay startTime) {
-    doseTimes.clear();
-
-    int dosesCount = maxDoseTimesAllowed; // نستخدم الـ getter الموجود عندك مسبقاً
-
-    if (dosesCount == 1) {
-      doseTimes.add(startTime);
-      return;
-    }
-
-    int intervalHours = 24 ~/ dosesCount;
-
-    final now = DateTime.now();
-    DateTime tempDate = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        startTime.hour,
-        startTime.minute
-    );
-
-    for (int i = 0; i < dosesCount; i++) {
-      DateTime nextDose = tempDate.add(Duration(hours: i * intervalHours));
-
-      doseTimes.add(TimeOfDay.fromDateTime(nextDose));
-    }
-
-    _sortDoseTimes();
-  }
-
-  void _sortDoseTimes() {
-    doseTimes.sort((a, b) {
-      final aMinutes = a.hour * 60 + a.minute;
-      final bMinutes = b.hour * 60 + b.minute;
-      return aMinutes.compareTo(bMinutes);
-    });
-  }
-  void removeDoseTime(int index) {
-    if (index >= 0 && index < doseTimes.length) {
-      doseTimes.removeAt(index);
+      isListening.value = false;
+      await speech.stop();
     }
   }
 
@@ -225,8 +233,7 @@ class AddMedicationController extends GetxController {
       return false;
     }
 
-    final dosageValue = double.tryParse(dosageController.text);
-    if (dosageValue == null || dosageValue <= 0) {
+    if (double.tryParse(dosageController.text) == null) {
       errorMessage.value = 'Please enter a valid dosage';
       return false;
     }
@@ -241,6 +248,16 @@ class AddMedicationController extends GetxController {
       return false;
     }
 
+    int expectedCount = maxDoseTimesAllowed;
+    if (expectedCount > 0 && doseTimes.length != expectedCount) {
+      if (doseTimes.isNotEmpty) {
+        _regenerateAutoSchedule(startTime: doseTimes.first);
+      } else {
+        errorMessage.value = 'Please add a dose time';
+        return false;
+      }
+    }
+
     if (doseTimes.isEmpty) {
       errorMessage.value = 'Please add at least one dose time';
       return false;
@@ -249,225 +266,162 @@ class AddMedicationController extends GetxController {
     return true;
   }
 
-  // ====== Image save ======
-  Future<String?> saveImageLocally(XFile imageFile) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName =
-          '${DateTime.now().millisecondsSinceEpoch}_${imageFile.name}';
-      final localPath = '${directory.path}/$fileName';
-      await File(imageFile.path).copy(localPath);
-      return localPath;
-    } catch (e) {
-      errorMessage.value = 'Error saving image: $e';
-      return null;
-    }
-  }
-
-  // ====== Save medication ======
-  Future<bool> saveMedication() async {
-    // Clear previous messages
+  // ====== Save Medication ======
+  Future<void> saveMedication() async {
     errorMessage.value = null;
-    successMessage.value = null;
 
-    if (!validateInputs()) {
-      return false;
-    }
+    if (!validateInputs()) return;
 
     final userId = authService.currentUserId;
-    if (userId == null || userId.isEmpty) {
-      errorMessage.value = 'User not logged in';
+    if (userId == null) {
       Get.offAllNamed('/login');
-      return false;
+      return;
     }
 
     isLoading.value = true;
-    String? localImagePath;
 
     try {
-      // 1. Save image if exists
+      // 1. Save Image
+      String? localImagePath;
       if (imageFile.value != null) {
         localImagePath = await saveImageLocally(imageFile.value!);
       }
 
-      final newMedication = Medication(
+      // 2. Insert Medication (Local)
+      final newMed = Medication(
         userId: userId,
         name: nameController.text.trim(),
         dosage: '${dosageController.text} mg',
         frequency: frequency.value,
         durationOfUse: duration.value,
-        notes: notesController.text.trim().isNotEmpty
-            ? notesController.text.trim()
-            : null,
+        notes: notesController.text.trim(),
         imageUrl: localImagePath,
         syncStatus: 'not_synced',
         isDeleted: 'false',
       );
 
-      await database.medicationsDao.insertMedication(newMedication);
+      await database.medicationsDao.insertMedication(newMed);
+      final insertedMed = (await database.medicationsDao.getMedicationsByUser(userId)).last;
 
-      final meds = await database.medicationsDao.getMedicationsByUser(userId);
-      final insertedMed = meds.last;
-
-      // 5. Save schedules locally
+      // 3. Insert Schedules (Local)
       for (final time in doseTimes) {
-        final schedule = MedicationSchedule(
-          scheduleId: null,
-          medId: insertedMed.medId!,
-          intakeTime: formatTimeForDB(time),
-          syncStatus: 'not_synced',
-        );
-        await database.medicationScheduleDao.insertSchedule(schedule);
+        await database.medicationScheduleDao.insertSchedule(MedicationSchedule(
+            scheduleId: null,
+            medId: insertedMed.medId!,
+            intakeTime: formatTimeForDB(time),
+            syncStatus: 'not_synced'
+        ));
       }
 
-      final savedSchedules = await database.medicationScheduleDao
-          .getSchedulesByMedId(insertedMed.medId!);
-
-      // 6. Generate intake_records locally
+      // 4. Insert Records (Local) - with NULL IDs
       final days = durationInDays(duration.value);
       final today = DateTime.now();
       final List<IntakeRecord> recordsToInsert = [];
-
       for (int d = 0; d < days; d++) {
-        final day = DateTime(
-          today.year,
-          today.month,
-          today.day,
-        ).add(Duration(days: d));
+        final day = DateTime(today.year, today.month, today.day).add(Duration(days: d));
         for (final t in doseTimes) {
-          final scheduled = DateTime(
-            day.year,
-            day.month,
-            day.day,
-            t.hour,
-            t.minute,
-          );
-          recordsToInsert.add(
-            IntakeRecord(
-              recordId: null,
-              medId: insertedMed.medId!,
-              scheduledAt: scheduled.toIso8601String(),
-              takenAt: null,
-              status: 'pending',
-              syncStatus: 'not_synced',
-            ),
-          );
+          final scheduled = DateTime(day.year, day.month, day.day, t.hour, t.minute);
+          recordsToInsert.add(IntakeRecord(
+            recordId: null,
+            medId: insertedMed.medId!,
+            scheduledAt: scheduled.toIso8601String(),
+            status: 'pending',
+            syncStatus: 'not_synced',
+          ));
         }
       }
-
       await database.intakeRecordDao.insertRecords(recordsToInsert);
 
-      final savedRecords = await database.intakeRecordDao.getRecordsByMedId(
-        insertedMed.medId!,
-      );
+      // 🛑 الخطوة المصيرية (بتاعتك): بنجيب الـ Records تاني عشان يبقى فيها IDs
+      final savedRecords = await database.intakeRecordDao.getRecordsByMedId(insertedMed.medId!);
 
-      // 7. Schedule notifications for all pending records
+      // 5. Notifications (Using savedRecords)
       try {
-        final notificationService = NotificationService();
-        await notificationService.scheduleAllNotificationsForMedication(
-          insertedMed,
-          savedRecords.map((r) => r.recordId!).toList(),
+        await NotificationService().scheduleAllNotificationsForMedication(
+            insertedMed, savedRecords.map((r) => r.recordId!).toList()
         );
-        print('✓ Scheduled ${savedRecords.length} notifications');
       } catch (e) {
-        print('Failed to schedule notifications: $e');
-        // لا توقف الـprocess لو الـnotifications فشلت
+        print("Notif Error: $e");
       }
 
-      final connected = await connectivityService.connected();
+      // ===========================================
+      // 🚀 Exit Strategy: Stop UI & Close Page
+      // ===========================================
 
-      if (connected) {
-        try {
-          // Sync Medication
-          await medicationsService.addMedicationToSupabase(
-            med: insertedMed,
-            userId: userId,
-          );
-          await database.medicationsDao.updateMedicationSyncStatus(
-            insertedMed.medId!,
-            'synced',
-          );
+      isLoading.value = false;
+      resetForm();
 
-          await schedulesService.addSchedulesToSupabase(savedSchedules);
-          for (final s in savedSchedules) {
-            await database.medicationScheduleDao.updateSyncStatus(
-              s.scheduleId!,
-              'synced',
-            );
+      Get.back(); // 1. Close Add Page
+
+      // 2. Navigate to Home
+      if (Get.isRegistered<NavigationController>()) {
+        final navController = Get.find<NavigationController>();
+        navController.navigateToIndex(0);
+      }
+
+      // 3. Show Success Snackbar
+      Get.snackbar(
+        'Success',
+        'Medication added successfully',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF4FC3F7),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 8,
+        icon: const Icon(Icons.check_circle, color: Colors.white),
+      );
+
+      // ===========================================
+      // ☁️ Background Sync (Safe Mode)
+      // ===========================================
+
+      // بنعمل الـ Sync في الخلفية عشان الصفحة متقفش
+      // وبنستخدم savedRecords عشان نتفادى الكراش
+      _syncToSupabaseSafe(insertedMed, userId, savedRecords);
+
+    } catch (e) {
+      isLoading.value = false;
+      errorMessage.value = 'Error saving medication: $e';
+    }
+  }
+
+  // دالة منفصلة للمزامنة الآمنة (Fire and Forget)
+  Future<void> _syncToSupabaseSafe(Medication med, String userId, List<IntakeRecord> savedRecords) async {
+    try {
+      if (await connectivityService.connected()) {
+        // Sync Med
+        await medicationsService.addMedicationToSupabase(med: med, userId: userId);
+        await database.medicationsDao.updateMedicationSyncStatus(med.medId!, 'synced');
+
+        // Sync Schedules
+        final savedSchedules = await database.medicationScheduleDao.getSchedulesByMedId(med.medId!);
+        await schedulesService.addSchedulesToSupabase(savedSchedules);
+        for(var s in savedSchedules) {
+          await database.medicationScheduleDao.updateSyncStatus(s.scheduleId!, 'synced');
+        }
+
+        // Sync Records
+        await recordsService.addRecordsToSupabase(savedRecords);
+
+        // 🛑 التعديل بتاعك هنا: Loop على savedRecords اللي فيها IDs
+        for(var r in savedRecords) {
+          if (r.recordId != null) {
+            await database.intakeRecordDao.updateSyncStatus(r.recordId!, 'synced');
           }
-
-          await recordsService.addRecordsToSupabase(savedRecords);
-          for (final r in savedRecords) {
-            await database.intakeRecordDao.updateSyncStatus(
-              r.recordId!,
-              'synced',
-            );
-          }
-
-          successMessage.value = 'Medication added successfully';
-          // Get.back();
-        } catch (e) {
-          successMessage.value =
-              'Medication added locally. Will sync when online.';
         }
       }
-
-      return true;
     } catch (e) {
-      errorMessage.value = 'Error saving medication: $e';
-      return false;
-    } finally {
-      isLoading.value = false;
+      print("Background Sync Error: $e");
     }
   }
 
-  Future<void> toggleNameListening() async {
-  if (!isListening.value) {
-    // بداية الاستماع
-    final available = await speech.initialize(
-      onError: (error) => print('Speech error: $error'),
-      onStatus: (status) => print('Speech status: $status'),
-    );
-    
-    if (!available) {
-      Get.snackbar(
-        'Error',
-        'Speech recognition not available',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    isListening.value = true;
-    
-    speech.listen(
-      onResult: (result) {
-        nameController.text = result.recognizedWords;
-      },
-      localeId: 'ar-EG', // غيّره لـ 'en-US' لو عايز إنجليزي
-      listenMode: ListenMode.confirmation,
-    );
-  } else {
-    // إيقاف الاستماع
-    isListening.value = false;
-    await speech.stop();
-  }
-}
-
-  // ====== Lifecycle ======
   @override
   void onClose() {
     nameController.dispose();
     dosageController.dispose();
     notesController.dispose();
-    speech.cancel(); // تنضيف الـspeech عند إغلاق الكنترولر
-    frequency.value = 'Select frequency';
-    duration.value = 'Select duration';
-    imageFile.value = null;
-    errorMessage.value = null;
-    successMessage.value = null;
-    doseTimes.clear();
-    isLoading.value = false;
+    speech.cancel();
     super.onClose();
   }
 }

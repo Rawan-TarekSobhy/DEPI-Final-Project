@@ -14,16 +14,17 @@ import 'package:reminder_app/services/records_service.dart';
 class MedicationsController extends GetxController {
   final medications = <Medication>[].obs;
   final nextDoseTimes = <int, String>{}.obs;
+
   final editDoseTimes = <TimeOfDay>[].obs;
   final editFrequency = ''.obs;
+
   final isLoading = false.obs;
+
   final AuthService authService = Get.find<AuthService>();
   final connectivityService = Get.find<ConnectivityService>();
   final medicationsService = Get.find<MedicationsService>();
   final schedulesService = Get.find<SchedulesService>();
   final recordsService = Get.find<RecordsService>();
-
-
 
   @override
   void onInit() {
@@ -43,8 +44,7 @@ class MedicationsController extends GetxController {
       nextDoseTimes.clear();
       for (final med in list) {
         if (med.medId == null) continue;
-        final schedules =
-            await database.medicationScheduleDao.getSchedulesByMedId(med.medId!);
+        final schedules = await database.medicationScheduleDao.getSchedulesByMedId(med.medId!);
         if (schedules.isNotEmpty) {
           schedules.sort((a, b) => a.intakeTime.compareTo(b.intakeTime));
           nextDoseTimes[med.medId!] = schedules.first.intakeTime;
@@ -55,99 +55,47 @@ class MedicationsController extends GetxController {
     }
   }
 
-Future<void> deleteMedication(Medication med) async {
-  if (med.medId == null) return;
-  
-  final isOnline = await connectivityService.connected();
-  
-  if (isOnline) {
-    try {
-      await medicationsService.deleteMedicationFromSupabase(med.medId!);
-      
-      // ✅ أضف الكود هنا - قبل hardDelete
+  Future<void> deleteMedication(Medication med) async {
+    if (med.medId == null) return;
+
+    final isOnline = await connectivityService.connected();
+
+    if (isOnline) {
+      try {
+        await medicationsService.deleteMedicationFromSupabase(med.medId!);
+
+        try {
+          final notificationService = NotificationService();
+          await notificationService.cancelMedicationNotifications(med.medId!);
+        } catch (_) {}
+
+        await database.medicationsDao.hardDeleteMedication(med.medId!);
+      } catch (e) {
+        print('Delete Error: $e');
+      }
+      await database.medicationsDao.markAsDeleted(med.medId!, 'not_synced');
+    } else {
       try {
         final notificationService = NotificationService();
         await notificationService.cancelMedicationNotifications(med.medId!);
-        print('✓ Cancelled notifications for medication');
-      } catch (e) {
-        print('Failed to cancel notifications: $e');
-      }
-      
-      // Hard delete Local
-      await database.medicationsDao.hardDeleteMedication(med.medId!);
-    } catch (e) {
-      print('Failed to delete medication from Supabase: $e');
-    }
-    // Supabase soft delete
-    await database.medicationsDao.markAsDeleted(med.medId!, 'not_synced');
-  } else {
-    // ✅ وأضفه هنا كمان - في الـelse block
-    try {
-      final notificationService = NotificationService();
-      await notificationService.cancelMedicationNotifications(med.medId!);
-      print('✓ Cancelled notifications for medication');
-    } catch (e) {
-      print('Failed to cancel notifications: $e');
-    }
-    
-    // soft delete: mark as deleted
-    await database.medicationsDao.markAsDeleted(med.medId!, 'not_synced');
-  }
-  
-  // 2- UI
-  if (med.medId != null) nextDoseTimes.remove(med.medId);
-  await loadMedications();
-  
-  Get.snackbar(
-    'Success',
-    'Medication deleted successfully',
-    snackPosition: SnackPosition.BOTTOM,
-    backgroundColor: Colors.green,
-    colorText: Colors.white,
-    duration: const Duration(seconds: 2),
-  );
-}
+      } catch (_) {}
 
-
-
-  Future<void> updateMedication(
-    Medication med, {
-    required String name,
-    required String dosage,
-    required String frequency,
-    required String duration,
-    required String notes,
-  }) async {
-    final updated = Medication(
-      medId: med.medId,
-      userId: med.userId,
-      name: name,
-      dosage: dosage,
-      frequency: frequency,
-      durationOfUse: duration,
-      notes: notes.isNotEmpty ? notes : null,
-      imageUrl: med.imageUrl,
-      syncStatus: 'not_synced',
-      isDeleted: med.isDeleted,
-    );
-    
-    await database.medicationsDao.updateMedication(updated);
-    
-    final isOnline = await connectivityService.connected();
-    if (isOnline) {
-      try {
-        await medicationsService.updateMedicationOnSupabase(updated);
-        await database.medicationsDao.updateMedicationSyncStatus(
-          updated.medId!,
-          'synced',
-        );
-        print('✅ Medication updated on Supabase immediately');
-      } catch (e) {
-        print('⚠️ Failed to sync medication update: $e');
-      }
+      await database.medicationsDao.markAsDeleted(med.medId!, 'not_synced');
     }
 
+    if (med.medId != null) nextDoseTimes.remove(med.medId);
     await loadMedications();
+
+    Get.snackbar(
+      'Deleted',
+      '${med.name} removed',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color(0xFF4FC3F7),
+      colorText: Colors.white,
+      duration: const Duration(seconds: 2),
+      margin: const EdgeInsets.all(10),
+      borderRadius: 8,
+    );
   }
 
   Future<void> loadScheduleForEdit(Medication med) async {
@@ -155,48 +103,62 @@ Future<void> deleteMedication(Medication med) async {
     editFrequency.value = med.frequency;
     if (med.medId == null) return;
 
-    final schedules =
-        await database.medicationScheduleDao.getSchedulesByMedId(med.medId!);
+    final schedules = await database.medicationScheduleDao.getSchedulesByMedId(med.medId!);
     for (final s in schedules) {
       final parts = s.intakeTime.split(':');
       if (parts.length != 2) continue;
       final h = int.tryParse(parts[0]);
       final m = int.tryParse(parts[1]);
-      if (h == null || m == null) continue;
-      editDoseTimes.add(TimeOfDay(hour: h, minute: m));
+      if (h != null && m != null) {
+        editDoseTimes.add(TimeOfDay(hour: h, minute: m));
+      }
     }
+    _sortEditDoseTimes();
+  }
 
-    editDoseTimes.sort((a, b) {
-      final aM = a.hour * 60 + a.minute;
-      final bM = b.hour * 60 + b.minute;
-      return aM.compareTo(bM);
-    });
+  void onEditFrequencyChanged(String? newValue) {
+    if (newValue == null) return;
+    editFrequency.value = newValue;
+
+    if (editDoseTimes.isEmpty) return;
+    if (newValue == 'As needed') return;
+
+    final firstTime = editDoseTimes.first;
+    _regenerateEditSchedule(startTime: firstTime);
   }
 
   void addDoseTimeForEdit(TimeOfDay time) {
-    final max = maxDoseTimesAllowedForEdit;
-    if (max > 0 && editDoseTimes.length >= max) {
-      Get.snackbar(
-        'Limit reached',
-        'You can only add $max dose times for this frequency',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+    if (editFrequency.value == 'As needed') {
+      final exists = editDoseTimes.any((t) => t.hour == time.hour && t.minute == time.minute);
+      if (!exists) {
+        editDoseTimes.add(time);
+        _sortEditDoseTimes();
+      }
+    } else {
+      _regenerateEditSchedule(startTime: time);
+    }
+  }
+
+  void _regenerateEditSchedule({required TimeOfDay startTime}) {
+    editDoseTimes.clear();
+    int count = maxDoseTimesAllowedForEdit;
+
+    if (count <= 0) return;
+
+    if (count == 1) {
+      editDoseTimes.add(startTime);
       return;
     }
 
-    final exists = editDoseTimes.any(
-      (t) => t.hour == time.hour && t.minute == time.minute,
-    );
-    if (!exists) {
-      editDoseTimes.add(time);
-      editDoseTimes.sort((a, b) {
-        final aM = a.hour * 60 + a.minute;
-        final bM = b.hour * 60 + b.minute;
-        return aM.compareTo(bM);
-      });
+    int interval = 24 ~/ count;
+    final now = DateTime.now();
+    DateTime base = DateTime(now.year, now.month, now.day, startTime.hour, startTime.minute);
+
+    for (int i = 0; i < count; i++) {
+      DateTime next = base.add(Duration(hours: i * interval));
+      editDoseTimes.add(TimeOfDay.fromDateTime(next));
     }
+    _sortEditDoseTimes();
   }
 
   void removeDoseTimeForEdit(int index) {
@@ -205,146 +167,121 @@ Future<void> deleteMedication(Medication med) async {
     }
   }
 
-  String formatTimeOfDay(TimeOfDay time) {
-    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-    final minute = time.minute.toString().padLeft(2, '0');
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '${hour.toString().padLeft(2, '0')}:$minute $period';
+  void _sortEditDoseTimes() {
+    editDoseTimes.sort((a, b) {
+      final aM = a.hour * 60 + a.minute;
+      final bM = b.hour * 60 + b.minute;
+      return aM.compareTo(bM);
+    });
   }
 
-  String formatTimeForDB(TimeOfDay time) {
-    final hour = time.hour.toString().padLeft(2, '0');
-    final minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute';
-  }
+  Future<void> saveEditedSchedule(Medication med) async {
+    if (med.medId == null) return;
 
-Future<void> saveEditedSchedule(Medication med) async {
-  if (med.medId == null) return;
-  
-  isLoading.value = true;
-  
-  try {
-    // 1. Update medication with new frequency
-    final updated = Medication(
-      medId: med.medId,
-      userId: med.userId,
-      name: med.name,
-      dosage: med.dosage,
-      frequency: editFrequency.value,
-      durationOfUse: med.durationOfUse,
-      notes: med.notes,
-      imageUrl: med.imageUrl,
-      syncStatus: 'not_synced',
-      isDeleted: med.isDeleted,
-    );
-    
-    await database.medicationsDao.updateMedication(updated);
-    
-    // 2. Get services
-    final isOnline = await connectivityService.connected();
-    
-    // 3. Sync with Supabase if online
-    if (isOnline) {
-      try {
-        // Delete old schedules from Supabase
-        await schedulesService.deleteSchedulesForMedFromSupabase(med.medId!);
-        
-        // Update medication on Supabase
-        await medicationsService.updateMedicationOnSupabase(updated);
-        
-        // Update sync status
-        await database.medicationsDao.updateMedicationSyncStatus(
-          updated.medId!,
-          'synced',
-        );
-      } catch (e) {
-        print('Failed to delete old schedules from Supabase: $e');
-      }
-    }
-    
-    // 4. Delete old schedules from local DB
-    await database.medicationScheduleDao.deleteSchedulesByMedId(med.medId!);
-    
-    // 5. Insert new schedules
-    for (final t in editDoseTimes) {
-      final schedule = MedicationSchedule(
-        scheduleId: null,
-        medId: med.medId!,
-        intakeTime: formatTimeForDB(t),
-        syncStatus: 'not_synced',
+    int expectedCount = maxDoseTimesAllowedForEdit;
+    if (expectedCount > 0 && editDoseTimes.length != expectedCount) {
+      Get.snackbar(
+        'Error',
+        'Frequency is set to $expectedCount times, but you have ${editDoseTimes.length} times set.\nPlease add the missing time.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
       );
-      await database.medicationScheduleDao.insertSchedule(schedule);
+      return;
     }
-    
-    // 6. Get saved schedules
-    final savedSchedules = await database.medicationScheduleDao
-        .getSchedulesByMedId(med.medId!);
-    
-    // 7. Sync new schedules if online
-    if (isOnline && savedSchedules.isNotEmpty) {
-      try {
-        await schedulesService.addSchedulesToSupabase(savedSchedules);
-        
-        // Update sync status for each schedule
-        for (final s in savedSchedules) {
-          await database.medicationScheduleDao.updateSyncStatus(
-            s.scheduleId!,
-            'synced',
-          );
+
+    isLoading.value = true;
+
+    try {
+      final updated = Medication(
+        medId: med.medId,
+        userId: med.userId,
+        name: med.name,
+        dosage: med.dosage,
+        frequency: editFrequency.value,
+        durationOfUse: med.durationOfUse,
+        notes: med.notes,
+        imageUrl: med.imageUrl,
+        syncStatus: 'not_synced',
+        isDeleted: med.isDeleted,
+      );
+
+      await database.medicationsDao.updateMedication(updated);
+
+      final isOnline = await connectivityService.connected();
+      if (isOnline) {
+        try {
+          await schedulesService.deleteSchedulesForMedFromSupabase(med.medId!);
+          await medicationsService.updateMedicationOnSupabase(updated);
+          await database.medicationsDao.updateMedicationSyncStatus(updated.medId!, 'synced');
+        } catch (e) {
+          print('Supabase update failed: $e');
         }
-        print('Schedules synced to Supabase immediately');
-      } catch (e) {
-        print('Failed to sync new schedules: $e');
       }
+
+      await database.medicationScheduleDao.deleteSchedulesByMedId(med.medId!);
+      for (final t in editDoseTimes) {
+        await database.medicationScheduleDao.insertSchedule(MedicationSchedule(
+          scheduleId: null,
+          medId: med.medId!,
+          intakeTime: formatTimeForDB(t),
+          syncStatus: 'not_synced',
+        ));
+      }
+
+      if (isOnline) {
+        try {
+          final savedSchedules = await database.medicationScheduleDao.getSchedulesByMedId(med.medId!);
+          if (savedSchedules.isNotEmpty) {
+            await schedulesService.addSchedulesToSupabase(savedSchedules);
+            for (final s in savedSchedules) {
+              await database.medicationScheduleDao.updateSyncStatus(s.scheduleId!, 'synced');
+            }
+          }
+        } catch (_) {}
+      }
+
+      await updateIntakeRecordsForEditedSchedule(med.medId!, med.durationOfUse);
+
+      try {
+        final notificationService = NotificationService();
+        final allMeds = await database.medicationsDao.getMedicationsByUser(med.userId);
+        final updatedMed = allMeds.firstWhere(
+              (m) => m.medId == med.medId,
+          orElse: () => updated,
+        );
+        await notificationService.rescheduleMedicationNotifications(updatedMed);
+      } catch (e) {
+        print('Notif reschedule failed: $e');
+      }
+
+      await loadMedications();
+
+      Get.back();
+
+      Get.snackbar(
+        'Updated',
+        'Schedule for ${med.name} updated',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF4FC3F7),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(10),
+        borderRadius: 8,
+      );
+
+    } finally {
+      isLoading.value = false;
     }
-    
-    // 8. Update intake records
-    await updateIntakeRecordsForEditedSchedule(
-      med.medId!,
-      med.durationOfUse,
-    );
-    
-    // 9. Reschedule notifications
-try {
-  final notificationService = NotificationService();
-  
-  // Get the updated medication from database...
-  final allMeds = await database.medicationsDao.getMedicationsByUser(med.userId!);
-  final updatedMed = allMeds.firstWhere(
-    (m) => m.medId == med.medId,
-    orElse: () => updated,  // ✅ حل المشكلة هنا
-  );
-  
-  // Cancel old notifications and schedule new ones
-  await notificationService.rescheduleMedicationNotifications(updatedMed);
-  print('✅ Rescheduled notifications after edit');
-} catch (e, st) {
-  print('Failed to reschedule notifications: $e');
-  print(st);
-}
-
-    
-    // 10. Reload medications
-    await loadMedications();
-    
-  } finally {
-    isLoading.value = false;
   }
-}
 
-
-  Future<void> updateIntakeRecordsForEditedSchedule(
-    int medId,
-    String durationOfUse,
-  ) async {
+  Future<void> updateIntakeRecordsForEditedSchedule(int medId, String durationOfUse) async {
     final isOnline = await connectivityService.connected();
 
     final allRecords = await database.intakeRecordDao.getRecordsByMedId(medId);
-    
-    if (allRecords.isEmpty) {
-      print('⚠️ No records found for medication $medId');
-      return;
-    }
+
+    if (allRecords.isEmpty) return;
 
     allRecords.sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
     final firstRecord = allRecords.first;
@@ -358,10 +295,17 @@ try {
     final totalDays = durationInDays(durationOfUse);
     final remainingDays = totalDays - daysPassed;
 
-    print('📊 Duration: $totalDays days, Passed: $daysPassed days, Remaining: $remainingDays days');
-
     final pendingRecords = allRecords.where((r) => r.status == 'pending').toList();
-    
+
+    final notificationService = NotificationService();
+    for (final r in pendingRecords) {
+      if (r.recordId != null) {
+        try {
+          await notificationService.cancelNotification(r.recordId!);
+        } catch (_) {}
+      }
+    }
+
     if (isOnline && pendingRecords.isNotEmpty) {
       try {
         for (final r in pendingRecords) {
@@ -369,9 +313,8 @@ try {
             await recordsService.deleteRecordByIdFromSupabase(r.recordId!);
           }
         }
-        print('✅ Deleted ${pendingRecords.length} pending records from Supabase');
       } catch (e) {
-        print('⚠️ Failed to delete pending records from Supabase: $e');
+        print('Failed to delete pending records from Supabase: $e');
       }
     }
 
@@ -379,16 +322,13 @@ try {
       await database.intakeRecordDao.deleteRecord(r);
     }
 
-    if (remainingDays <= 0) {
-      print('✅ Medication duration completed. No new records needed.');
-      return;
-    }
+    if (remainingDays <= 0) return;
 
     final List<IntakeRecord> newRecords = [];
 
     for (int d = 0; d < remainingDays; d++) {
       final day = currentDay.add(Duration(days: d));
-      
+
       for (final t in editDoseTimes) {
         final scheduled = DateTime(
           day.year,
@@ -397,10 +337,8 @@ try {
           t.hour,
           t.minute,
         );
-        
-        if (scheduled.isBefore(DateTime.now())) {
-          continue;
-        }
+
+        if (scheduled.isBefore(DateTime.now())) continue;
 
         newRecords.add(
           IntakeRecord(
@@ -417,7 +355,6 @@ try {
 
     if (newRecords.isNotEmpty) {
       await database.intakeRecordDao.insertRecords(newRecords);
-      print('✅ Created ${newRecords.length} new records for remaining $remainingDays days');
 
       if (isOnline) {
         try {
@@ -428,39 +365,25 @@ try {
 
           if (newlyCreatedRecords.isNotEmpty) {
             await recordsService.addRecordsToSupabase(newlyCreatedRecords);
-            
+
             for (final r in newlyCreatedRecords) {
-              await database.intakeRecordDao.updateSyncStatus(
-                r.recordId!,
-                'synced',
-              );
+              if (r.recordId != null) {
+                await database.intakeRecordDao.updateSyncStatus(r.recordId!, 'synced');
+              }
             }
-            print('✅ ${newlyCreatedRecords.length} new records synced to Supabase immediately');
           }
         } catch (e) {
-          print('⚠️ Failed to sync new records: $e');
+          print('Failed to sync new records: $e');
         }
       }
-    } else {
-      print('ℹ️ No new records to create (all times in the past)');
     }
   }
 
-  int durationInDays(String value) {
-    switch (value) {
-      case '7 days':
-        return 7;
-      case '14 days':
-        return 14;
-      case '30 days':
-        return 30;
-      case '90 days':
-        return 90;
-      case 'Ongoing':
-        return 90;
-      default:
-        return 30;
-    }
+  String formatTimeOfDay(TimeOfDay time) {
+    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
+    final minute = time.minute.toString().padLeft(2, '0');
+    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
+    return '${hour.toString().padLeft(2, '0')}:$minute $period';
   }
 
   String formatTimeForDisplay(String hhmm) {
@@ -479,20 +402,31 @@ try {
     }
   }
 
+  String formatTimeForDB(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
+  int durationInDays(String value) {
+    switch (value) {
+      case '7 days': return 7;
+      case '14 days': return 14;
+      case '30 days': return 30;
+      case '90 days': return 90;
+      case 'Ongoing': return 90;
+      default: return 30;
+    }
+  }
+
   int get maxDoseTimesAllowedForEdit {
     switch (editFrequency.value) {
-      case 'Once daily':
-        return 1;
-      case 'Twice daily (2x/day)':
-        return 2;
-      case 'Three times daily (3x/day)':
-        return 3;
-      case 'Four times daily (4x/day)':
-        return 4;
-      case 'As needed':
-        return 0;
-      default:
-        return 0;
+      case 'Once daily': return 1;
+      case 'Twice daily (2x/day)': return 2;
+      case 'Three times daily (3x/day)': return 3;
+      case 'Four times daily (4x/day)': return 4;
+      case 'As needed': return 0;
+      default: return 0;
     }
   }
 }
