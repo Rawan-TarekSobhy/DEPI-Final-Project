@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
 import 'package:reminder_app/controllers/add_medication_controller.dart';
-import 'package:reminder_app/controllers/navigation_controller.dart';
+// import 'package:reminder_app/controllers/navigation_controller.dart'; // لو بتستخدم navigation controller شيل الكومنت
 
 import '../theme/app_theme.dart';
 
@@ -31,20 +31,6 @@ class AddMedicationPage extends GetView<AddMedicationController> {
           backgroundColor: Colors.red,
           colorText: Colors.white,
           duration: const Duration(seconds: 3),
-          margin: const EdgeInsets.all(10),
-          borderRadius: 8,
-        );
-      }
-    });
-    ever(controller.successMessage, (String? message) {
-      if (message != null && message.isNotEmpty) {
-        Get.snackbar(
-          'Success',
-          message,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: const Color(0xFF4FC3F7),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 2),
           margin: const EdgeInsets.all(10),
           borderRadius: 8,
         );
@@ -97,30 +83,30 @@ class AddMedicationPage extends GetView<AddMedicationController> {
         ),
       ),
       body: Obx(
-        () => controller.isLoading.value
+            () => controller.isLoading.value
             ? Center(
-                child: SpinKitPumpingHeart(color: theme.primaryColor, size: 50),
-              )
+          child: SpinKitPumpingHeart(color: theme.primaryColor, size: 50),
+        )
             : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: paddingHorizontal,
-                  vertical: spacingVertical,
-                ),
-                physics: const ClampingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildMedicationPhotoCard(controller),
-                    const SizedBox(height: spacingVertical),
-                    _buildBasicInformationCard(controller),
-                    const SizedBox(height: spacingVertical),
-                    _buildScheduleTimeCard(controller, context),
-                    const SizedBox(height: spacingVertical),
-                    _buildAddButton(controller),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: paddingHorizontal,
+            vertical: spacingVertical,
+          ),
+          physics: const ClampingScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildMedicationPhotoCard(controller),
+              const SizedBox(height: spacingVertical),
+              _buildBasicInformationCard(controller),
+              const SizedBox(height: spacingVertical),
+              _buildScheduleTimeCard(controller, context),
+              const SizedBox(height: spacingVertical),
+              _buildAddButton(controller),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -160,7 +146,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
           GestureDetector(
             onTap: () => _showImageSourcePicker(controller),
             child: Obx(
-              () => Container(
+                  () => Container(
                 width: double.infinity,
                 height: 180,
                 decoration: BoxDecoration(
@@ -180,84 +166,84 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                 ),
                 child: controller.imageFile.value != null
                     ? Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: kIsWeb
-                                ? Image.network(
-                                    controller.imageFile.value!.path,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  )
-                                : Image.file(
-                                    File(controller.imageFile.value!.path),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  ),
-                          ),
-                          // Edit icon overlay
-                          Positioned(
-                            right: 8,
-                            top: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Get.theme.cardColor,
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 8,
-                                  ),
-                                ],
-                              ),
-                              child: Icon(
-                                Icons.edit,
-                                size: 18,
-                                color: Get.theme.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: kIsWeb
+                          ? Image.network(
+                        controller.imageFile.value!.path,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
                       )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: Get.theme.primaryColor.withOpacity(0.1),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.add_photo_alternate_rounded,
-                              color: Get.theme.primaryColor,
-                              size: 32,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Tap to add a photo',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Get.theme.textTheme.bodyLarge!.color,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Helps you recognize pills easily',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Get.theme.textTheme.bodyMedium!.color,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                          : Image.file(
+                        File(controller.imageFile.value!.path),
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
                       ),
+                    ),
+                    // Edit icon overlay
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Get.theme.cardColor,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.edit,
+                          size: 18,
+                          color: Get.theme.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+                    : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: Get.theme.primaryColor.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.add_photo_alternate_rounded,
+                        color: Get.theme.primaryColor,
+                        size: 32,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Tap to add a photo',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Get.theme.textTheme.bodyLarge!.color,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Helps you recognize pills easily',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Get.theme.textTheme.bodyMedium!.color,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -344,9 +330,9 @@ class AddMedicationPage extends GetView<AddMedicationController> {
   }
 
   Widget _buildScheduleTimeCard(
-    AddMedicationController controller,
-    BuildContext context,
-  ) {
+      AddMedicationController controller,
+      BuildContext context,
+      ) {
     return _buildCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -365,6 +351,18 @@ class AddMedicationPage extends GetView<AddMedicationController> {
               ),
             ],
           ),
+          const SizedBox(height: 8),
+
+          // Helper text to show limits
+          Obx(() {
+            final max = controller.maxDoseTimesAllowed;
+            if (max == 0) return const SizedBox.shrink(); // As needed
+            return Text(
+              'Please add exactly $max times',
+              style: TextStyle(fontSize: 12, color: Get.theme.primaryColor.withOpacity(0.8)),
+            );
+          }),
+
           const SizedBox(height: 12.0),
 
           // Add Time Button
@@ -504,26 +502,17 @@ class AddMedicationPage extends GetView<AddMedicationController> {
 
   Widget _buildAddButton(AddMedicationController controller) {
     return Obx(
-      () => SizedBox(
+          () => SizedBox(
         width: double.infinity,
         height: 50,
         child: ElevatedButton(
+          // الزرار مبيستناش نتيجة، بينفذ الأمر والكنترولر يتصرف
           onPressed: controller.isLoading.value
               ? null
-              : () async {
-                  // Get.back(); // Close the add medication page
-                  final ok = await controller.saveMedication();
-                    // Get.back();
-                    // Get.back();
-                  if (ok == true) {
-                    controller.resetForm();
-                    
-                    // Get.back();
-                    // final nav = Get.find<NavigationController>();
-                    // // نروح لتبويب الـ Home (index 0)
-                    // nav.navigateToIndex(0); // Navigate to main page
-                  }
-                },
+              : () {
+            FocusManager.instance.primaryFocus?.unfocus(); // اقفل الكيبورد
+            controller.saveMedication(); // نادِ الدالة فقط
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: Get.theme.primaryColor,
             disabledBackgroundColor: Get.theme.primaryColor.withOpacity(0.6),
@@ -534,37 +523,36 @@ class AddMedicationPage extends GetView<AddMedicationController> {
           ),
           child: controller.isLoading.value
               ? SizedBox(
-                  height: 22,
-                  width: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Get.theme.colorScheme.onPrimary,
-                  ),
-                )
+            height: 22,
+            width: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: Get.theme.colorScheme.onPrimary,
+            ),
+          )
               : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add_circle_outline,
-                      size: 22,
-                      color: Get.theme.colorScheme.onPrimary,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Add Medication',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Get.theme.colorScheme.onPrimary,
-                      ),
-                    ),
-                  ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.add_circle_outline,
+                size: 22,
+                color: Get.theme.colorScheme.onPrimary,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                'Add Medication',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Get.theme.colorScheme.onPrimary,
                 ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
-
   // ======================= Shared Helpers =======================
 
   Widget _buildCard({required Widget child}) {
@@ -585,81 +573,81 @@ class AddMedicationPage extends GetView<AddMedicationController> {
     );
   }
 
-Widget _buildInputFieldWithMicWithController({
-  required String label,
-  required String hint,
-  required TextEditingController controller,
-  TextInputType keyboardType = TextInputType.text,
-  int maxLines = 1,
-  bool withMic = false,
-}) {
-  final theme = Get.theme;
-  final c = Get.find<AddMedicationController>();
+  Widget _buildInputFieldWithMicWithController({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    TextInputType keyboardType = TextInputType.text,
+    int maxLines = 1,
+    bool withMic = false,
+  }) {
+    final theme = Get.theme;
+    final c = Get.find<AddMedicationController>();
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: theme.primaryColor,
-        ),
-      ),
-      const SizedBox(height: 8),
-      Obx(() {
-        final listening = c.isListening.value;
-        return TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          maxLines: maxLines,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
           style: TextStyle(
-            fontSize: 14,
-            color: theme.textTheme.bodyLarge!.color,
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: theme.primaryColor,
           ),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
+        ),
+        const SizedBox(height: 8),
+        Obx(() {
+          final listening = c.isListening.value;
+          return TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            maxLines: maxLines,
+            style: TextStyle(
               fontSize: 14,
+              color: theme.textTheme.bodyLarge!.color,
             ),
-            filled: true,
-            fillColor: theme.scaffoldBackgroundColor,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 12,
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(
-                color: theme.textTheme.bodyMedium!.color!.withOpacity(0.2),
-                width: 1,
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: theme.textTheme.bodyMedium!.color!.withOpacity(0.5),
+                fontSize: 14,
               ),
+              filled: true,
+              fillColor: theme.scaffoldBackgroundColor,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(
+                  color: theme.textTheme.bodyMedium!.color!.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                borderSide: BorderSide(color: theme.primaryColor, width: 2),
+              ),
+              suffixIcon: withMic
+                  ? IconButton(
+                icon: Icon(
+                  listening ? Icons.mic : Icons.mic_none,
+                  color: listening ? theme.primaryColor : null,
+                ),
+                onPressed: c.toggleNameListening,
+              )
+                  : null,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              borderSide: BorderSide(color: theme.primaryColor, width: 2),
-            ),
-            suffixIcon: withMic
-                ? IconButton(
-                    icon: Icon(
-                      listening ? Icons.mic : Icons.mic_none,
-                      color: listening ? theme.primaryColor : null,
-                    ),
-                    onPressed: c.toggleNameListening,
-                  )
-                : null,
-          ),
-        );
-      }),
-    ],
-  );
-}
+          );
+        }),
+      ],
+    );
+  }
 
 
   Widget _buildDosageField(AddMedicationController controller) {
@@ -759,7 +747,7 @@ Widget _buildInputFieldWithMicWithController({
         ),
         const SizedBox(height: 8),
         Obx(
-          () => DropdownButtonFormField<String>(
+              () => DropdownButtonFormField<String>(
             value: controller.frequency.value == 'Select frequency'
                 ? null
                 : controller.frequency.value,
@@ -786,20 +774,22 @@ Widget _buildInputFieldWithMicWithController({
                 .where((v) => v != 'Select frequency')
                 .map(
                   (v) => DropdownMenuItem(
-                    value: v,
-                    child: Text(
-                      v,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Get.theme.textTheme.bodyLarge!.color,
-                      ),
-                    ),
+                value: v,
+                child: Text(
+                  v,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Get.theme.textTheme.bodyLarge!.color,
                   ),
-                )
+                ),
+              ),
+            )
                 .toList(),
             onChanged: (val) {
+              controller.onFrequencyChanged(val);
               if (val != null) {
                 controller.frequency.value = val;
+                // هنا بنظبط الليستة لو اليوزر غير رأيه من عدد كبير لعدد صغير
                 final max = controller.maxDoseTimesAllowed;
                 if (max > 0 && controller.doseTimes.length > max) {
                   controller.doseTimes.value = controller.doseTimes
@@ -828,7 +818,7 @@ Widget _buildInputFieldWithMicWithController({
         ),
         const SizedBox(height: 8),
         Obx(
-          () => DropdownButtonFormField<String>(
+              () => DropdownButtonFormField<String>(
             value: controller.duration.value == 'Select duration'
                 ? null
                 : controller.duration.value,
@@ -855,16 +845,16 @@ Widget _buildInputFieldWithMicWithController({
                 .where((v) => v != 'Select duration')
                 .map(
                   (v) => DropdownMenuItem(
-                    value: v,
-                    child: Text(
-                      v,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Get.theme.textTheme.bodyLarge!.color,
-                      ),
-                    ),
+                value: v,
+                child: Text(
+                  v,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Get.theme.textTheme.bodyLarge!.color,
                   ),
-                )
+                ),
+              ),
+            )
                 .toList(),
             onChanged: (val) {
               if (val != null) {

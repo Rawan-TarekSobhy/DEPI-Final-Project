@@ -7,7 +7,6 @@ import 'package:reminder_app/data/entity/medications.dart';
 import 'package:reminder_app/services/connectivity_service.dart';
 import '../theme/app_theme.dart';
 
-
 class HomePage extends GetView<HomeController> {
   HomePage({Key? key}) : super(key: key);
 
@@ -25,323 +24,314 @@ class HomePage extends GetView<HomeController> {
 Widget _homeTab(BuildContext context, double h, double w) {
   final theme = Theme.of(context);
 
-  return SafeArea(
-    child: SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildHeader(h, w, Get.find<HomeController>(), context),
-          const SizedBox(height: 14),
+  // تم إزالة SafeArea من هنا
+  return SingleChildScrollView(
+    child: Column(
+      children: [
+        _buildHeader(h, w, Get.find<HomeController>(), context),
+        const SizedBox(height: 14),
 
-          // Quick Actions
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.flash_on_rounded,
-                      size: 16,
-                      color: theme.primaryColor,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Quick Actions',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13,
-                        color: theme.textTheme.bodyLarge!.color,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _quickActionButton(
-                        Icons.add_circle_rounded,
-                        'Add Med',
-                        const Color(0xFF4FC3F7),
-                        () => Get.toNamed('/addMedication'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _quickActionButton(
-                        Icons.smart_toy_rounded,
-                        'Med Assistant',
-                        const Color.fromARGB(255, 255, 145, 0),
-                        () => Get.toNamed('/chatbot'),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _quickActionButton(
-                        Icons.local_pharmacy_rounded,
-                        'Pharmacies',
-                        const Color(0xFFFF7043),
-                        () async {
-                          final connectivityService =
-                              Get.find<ConnectivityService>();
-                          final connected =
-                              await connectivityService.connected();
-
-                          if (!connected) {
-                            Get.snackbar(
-                              'No internet',
-                              'You need an internet connection to view nearby pharmacies.',
-                              backgroundColor: Colors.red,
-                              colorText: Colors.white,
-                              snackPosition: SnackPosition.TOP,
-                              duration: const Duration(seconds: 3),
-                              margin: const EdgeInsets.all(10),
-                              borderRadius: 8,
-                            );
-                            return;
-                          }
-
-                          Get.toNamed('/nearbyPharmacies');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Today's Schedule title
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.calendar_today_rounded,
-                  size: 16,
-                  color: theme.primaryColor,
-                ),
-                const SizedBox(width: 6),
-                Text(
-                  "Today's Schedule",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: theme.textTheme.bodyLarge!.color,
+        // Quick Actions
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.flash_on_rounded,
+                    size: 16,
+                    color: theme.primaryColor,
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Quick Actions',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                      color: theme.textTheme.bodyLarge!.color,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _quickActionButton(
+                      Icons.add_circle_rounded,
+                      'Add Med',
+                      const Color(0xFF4FC3F7),
+                          () => Get.toNamed('/addMedication'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _quickActionButton(
+                      Icons.smart_toy_rounded,
+                      'Med Assistant',
+                      const Color.fromARGB(255, 255, 145, 0),
+                          () => Get.toNamed('/chatbot'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _quickActionButton(
+                      Icons.local_pharmacy_rounded,
+                      'Pharmacies',
+                      const Color(0xFFFF7043),
+                          () async {
+                        final connectivityService =
+                        Get.find<ConnectivityService>();
+                        final connected = await connectivityService.connected();
+
+                        if (!connected) {
+                          Get.snackbar(
+                            'No internet',
+                            'You need an internet connection to view nearby pharmacies.',
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white,
+                            snackPosition: SnackPosition.TOP,
+                            duration: const Duration(seconds: 3),
+                            margin: const EdgeInsets.all(10),
+                            borderRadius: 8,
+                          );
+                          return;
+                        }
+
+                        Get.toNamed('/nearbyPharmacies');
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
+        ),
 
-          const SizedBox(height: 10),
+        const SizedBox(height: 16),
 
-          // Today's Records
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            child: Obx(() {
-              final controller = Get.find<HomeController>();
+        // Today's Schedule title
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(
+            children: [
+              Icon(
+                Icons.calendar_today_rounded,
+                size: 16,
+                color: theme.primaryColor,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                "Today's Schedule",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: theme.textTheme.bodyLarge!.color,
+                ),
+              ),
+            ],
+          ),
+        ),
 
-              if (controller.isLoading.value &&
-                  controller.todaysRecords.isEmpty) {
-                return Center(
-                  child: Padding(
+        const SizedBox(height: 10),
+
+        // Today's Records
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Obx(() {
+            final controller = Get.find<HomeController>();
+
+            if (controller.isLoading.value &&
+                controller.todaysRecords.isEmpty) {
+              return Center(
+                child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: SpinKitPumpingHeart(
-                                    color: theme.primaryColor,
-                                    size: 30.0,
-                                  )
+                      color: theme.primaryColor,
+                      size: 30.0,
+                    )),
+              );
+            }
+
+            if (controller.todaysRecords.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  'No doses scheduled for today',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: theme.textTheme.bodyMedium!.color,
                   ),
-                );
-              }
+                ),
+              );
+            }
 
-              if (controller.todaysRecords.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Text(
-                    'No doses scheduled for today',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: theme.textTheme.bodyMedium!.color,
-                    ),
+            return Column(
+              children: List.generate(controller.todaysRecords.length, (index) {
+                final IntakeRecord record = controller.todaysRecords[index];
+                final Medication med = controller.todaysMeds[index];
+                final time = controller.formatTime(record.scheduledAt);
+                final status = record.status;
+                final isPending = status == 'pending';
+
+                Color statusColor;
+                String statusText;
+
+                switch (status) {
+                  case 'taken':
+                    statusColor = const Color(0xFF25A864);
+                    statusText = 'Taken';
+                    break;
+                  case 'missed':
+                    statusColor = const Color(0xFFE57373);
+                    statusText = 'Missed';
+                    break;
+                  default:
+                    statusColor = const Color(0xFFF5A623);
+                    statusText = 'Pending';
+                }
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.04),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                );
-              }
-
-              return Column(
-                children:
-                    List.generate(controller.todaysRecords.length, (index) {
-                  final IntakeRecord record = controller.todaysRecords[index];
-                  final Medication med = controller.todaysMeds[index];
-                  final time = controller.formatTime(record.scheduledAt);
-                  final status = record.status;
-                  final isPending = status == 'pending';
-
-                  Color statusColor;
-                  String statusText;
-
-                  switch (status) {
-                    case 'taken':
-                      statusColor = const Color(0xFF25A864);
-                      statusText = 'Taken';
-                      break;
-                    case 'missed':
-                      statusColor = const Color(0xFFE57373);
-                      statusText = 'Missed';
-                      break;
-                    default:
-                      statusColor = const Color(0xFFF5A623);
-                      statusText = 'Pending';
-                  }
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                med.name,
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w700,
-                                  color:
-                                      theme.textTheme.bodyLarge!.color,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: statusColor.withOpacity(0.12),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                statusText,
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: statusColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${med.dosage} • ${med.frequency}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: theme.textTheme.bodyMedium!.color,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.access_time_outlined,
-                              size: 14,
-                              color: theme.iconTheme.color
-                                  ?.withOpacity(0.6),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              time,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              med.name,
                               style: TextStyle(
-                                fontSize: 13,
-                                color:
-                                    theme.textTheme.bodyMedium!.color,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: theme.textTheme.bodyLarge!.color,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                          ],
-                        ),
-                        if (isPending) ...[
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 38,
-                            child: ElevatedButton(
-                              onPressed: () => _showIntakeDialog(
-                                context,
-                                controller,
-                                record,
-                                med,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: theme.primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(10),
-                                ),
-                                elevation: 2,
-                              ),
-                              child: const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.check_circle_outline,
-                                    size: 16,
-                                    color: Colors.white,
-                                  ),
-                                  SizedBox(width: 6),
-                                  Text(
-                                    'Mark as Taken',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: statusColor.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              statusText,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: statusColor,
                               ),
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${med.dosage} • ${med.frequency}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: theme.textTheme.bodyMedium!.color,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_outlined,
+                            size: 14,
+                            color: theme.iconTheme.color?.withOpacity(0.6),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            time,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: theme.textTheme.bodyMedium!.color,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (isPending) ...[
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 38,
+                          child: ElevatedButton(
+                            onPressed: () => _showIntakeDialog(
+                              context,
+                              controller,
+                              record,
+                              med,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: theme.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 2,
+                            ),
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.check_circle_outline,
+                                  size: 16,
+                                  color: Colors.white,
+                                ),
+                                SizedBox(width: 6),
+                                Text(
+                                  'Mark as Taken',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
-                    ),
-                  );
-                }),
-              );
-            }),
-          ),
+                    ],
+                  ),
+                );
+              }),
+            );
+          }),
+        ),
 
-          const SizedBox(height: 100),
-        ],
-      ),
+        const SizedBox(height: 100),
+      ],
     ),
   );
 }
 
 void _showIntakeDialog(
-  BuildContext context,
-  HomeController controller,
-  IntakeRecord record,
-  Medication med,
-) {
+    BuildContext context,
+    HomeController controller,
+    IntakeRecord record,
+    Medication med,
+    ) {
   final time = controller.formatTime(record.scheduledAt);
 
   showDialog(
@@ -444,11 +434,9 @@ void _showIntakeDialog(
                               Navigator.of(ctx).pop();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color(0xFF4CAF50),
+                              backgroundColor: const Color(0xFF4CAF50),
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 1,
                             ),
@@ -478,8 +466,7 @@ void _showIntakeDialog(
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
                             child: const Text(
@@ -522,17 +509,21 @@ void _showIntakeDialog(
 }
 
 Widget _buildHeader(
-  double h,
-  double w,
-  HomeController controller,
-  BuildContext context,
-) {
+    double h,
+    double w,
+    HomeController controller,
+    BuildContext context,
+    ) {
   final theme = Theme.of(context);
   final bool isDark = theme.brightness == Brightness.dark;
 
+  // بنضيف Padding عشان يعوض إزالة SafeArea
+  // بنجيب طول الـ StatusBar ونزود عليه شوية
+  final topPadding = MediaQuery.of(context).padding.top + 16;
+
   return Container(
     width: double.infinity,
-    padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
+    padding: EdgeInsets.fromLTRB(14, topPadding, 14, 16),
     decoration: BoxDecoration(
       gradient: isDark ? AppColors.darkGradient : AppColors.lightGradient,
       borderRadius: const BorderRadius.only(
@@ -572,7 +563,7 @@ Widget _buildHeader(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'MediTrack',
+                  'Dawaya', // تم التغيير لـ Dawaya
                   style: TextStyle(
                     color: theme.textTheme.bodyLarge!.color,
                     fontWeight: FontWeight.bold,
@@ -598,7 +589,7 @@ Widget _buildHeader(
         Row(
           children: [
             Obx(
-              () => Text(
+                  () => Text(
                 controller.greeting.value,
                 style: TextStyle(
                   color: theme.textTheme.bodyLarge!.color,
@@ -609,7 +600,7 @@ Widget _buildHeader(
             ),
             const Spacer(),
             Obx(
-              () => IconButton(
+                  () => IconButton(
                 icon: Icon(
                   controller.isDark.value
                       ? Icons.wb_sunny_outlined
@@ -659,7 +650,7 @@ Widget _buildHeader(
                   ),
                   const SizedBox(height: 2),
                   Obx(
-                    () => Text(
+                        () => Text(
                       controller.currentTime.value,
                       style: TextStyle(
                         color: theme.textTheme.bodyLarge!.color,
@@ -692,11 +683,11 @@ Widget _buildHeader(
 
 // Quick Action Button
 Widget _quickActionButton(
-  IconData icon,
-  String label,
-  Color color,
-  VoidCallback onTap,
-) {
+    IconData icon,
+    String label,
+    Color color,
+    VoidCallback onTap,
+    ) {
   return GestureDetector(
     onTap: onTap,
     child: Container(

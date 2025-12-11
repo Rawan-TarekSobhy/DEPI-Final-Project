@@ -44,12 +44,9 @@ class MedicationsPage extends GetView<MedicationsController> {
                   IconButton(
                     icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
                     onPressed: () {
-  // نجيب NavigationController
-  final nav = Get.find<NavigationController>();
-  // نروح لتبويب الـ Home (index 0)
-  nav.navigateToIndex(0);
-},
-
+                      final nav = Get.find<NavigationController>();
+                      nav.navigateToIndex(0);
+                    },
                   ),
                   const SizedBox(width: 4),
                   Expanded(
@@ -167,11 +164,9 @@ class MedicationsPage extends GetView<MedicationsController> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ===== الصورة + الاسم + الجرعة =====
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // صورة الدواء قابلة للتكبير
               GestureDetector(
                 onTap: () {
                   if (med.imageUrl != null && med.imageUrl!.isNotEmpty) {
@@ -218,7 +213,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                 ),
               ),
 
-              // النصوص (الاسم + الجرعة + التكرار)
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +241,6 @@ class MedicationsPage extends GetView<MedicationsController> {
 
           const SizedBox(height: 12),
 
-          // ===== Next dose + Duration =====
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -323,7 +316,6 @@ class MedicationsPage extends GetView<MedicationsController> {
             ],
           ),
 
-          // ===== Notes (لو موجودة) =====
           if (med.notes != null && med.notes!.isNotEmpty) ...[
             const SizedBox(height: 10),
             Container(
@@ -354,7 +346,6 @@ class MedicationsPage extends GetView<MedicationsController> {
 
           const SizedBox(height: 12),
 
-          // ===== أزرار Edit / Delete =====
           Row(
             children: [
               Expanded(
@@ -433,7 +424,6 @@ class MedicationsPage extends GetView<MedicationsController> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Icon with gradient background
                 Container(
                   width: 70,
                   height: 70,
@@ -453,7 +443,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                 ),
                 const SizedBox(height: 20),
 
-                // Title
                 Text(
                   'Delete Medication',
                   style: TextStyle(
@@ -464,7 +453,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                 ),
                 const SizedBox(height: 12),
 
-                // Content
                 Text(
                   'Are you sure you want to delete "${med.name}"?',
                   textAlign: TextAlign.center,
@@ -482,7 +470,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                 ),
                 const SizedBox(height: 24),
 
-                // Buttons
                 Row(
                   children: [
                     Expanded(
@@ -521,19 +508,10 @@ class MedicationsPage extends GetView<MedicationsController> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () async {
-                            final c = Get.find<MedicationsController>();
-                            await c.deleteMedication(med);
+                          onPressed: () {
                             Navigator.of(ctx).pop();
-
-                            Get.snackbar(
-                              'Deleted',
-                              '${med.name} has been removed',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: theme.primaryColor,
-                              colorText: Colors.white,
-                              duration: const Duration(seconds: 2),
-                            );
+                            final c = Get.find<MedicationsController>();
+                            c.deleteMedication(med);
                           },
                           child: const Text(
                             'Delete',
@@ -593,7 +571,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header with gradient background
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -627,7 +604,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Frequency
                         Text(
                           'Frequency',
                           style: TextStyle(
@@ -704,21 +680,12 @@ class MedicationsPage extends GetView<MedicationsController> {
                           }).toList(),
                           onChanged: (val) {
                             if (val != null) {
-                              controller.editFrequency.value = val;
-                              final max = controller.maxDoseTimesAllowedForEdit;
-                              if (max > 0 &&
-                                  controller.editDoseTimes.length > max) {
-                                controller.editDoseTimes.value = controller
-                                    .editDoseTimes
-                                    .take(max)
-                                    .toList();
-                              }
+                              controller.onEditFrequencyChanged(val);
                             }
                           },
                         ),
                         const SizedBox(height: 16),
 
-                        // Dose Times
                         Text(
                           'Dose Times',
                           style: TextStyle(
@@ -729,7 +696,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                         ),
                         const SizedBox(height: 8),
 
-                        // Add Dose Time Button
                         GestureDetector(
                           onTap: () async {
                             final selectedTime = await showTimePicker(
@@ -794,7 +760,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Dose Times List
                         if (controller.editDoseTimes.isEmpty)
                           Container(
                             width: double.infinity,
@@ -873,7 +838,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                           ),
                         const SizedBox(height: 24),
 
-                        // Save Button
                         Obx(
                               () => SizedBox(
                             width: double.infinity,
@@ -881,11 +845,8 @@ class MedicationsPage extends GetView<MedicationsController> {
                             child: ElevatedButton(
                               onPressed: controller.isLoading.value
                                   ? null
-                                  : () async {
-                                if (controller
-                                    .editFrequency
-                                    .value
-                                    .isEmpty ||
+                                  : () {
+                                if (controller.editFrequency.value.isEmpty ||
                                     controller.editDoseTimes.isEmpty) {
                                   Get.snackbar(
                                     'Error',
@@ -896,23 +857,12 @@ class MedicationsPage extends GetView<MedicationsController> {
                                   );
                                   return;
                                 }
-
-                                await controller.saveEditedSchedule(med);
-
-                                // Close dialog after short delay
-                                Future.delayed(
-                                  const Duration(milliseconds: 500),
-                                      () {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.of(ctx).pop();
-                                    }
-                                  },
-                                );
+                                controller.saveEditedSchedule(med);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: theme.primaryColor,
                                 disabledBackgroundColor: theme
-                                    .primaryColor,
+                                    .primaryColor.withOpacity(0.6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -920,19 +870,18 @@ class MedicationsPage extends GetView<MedicationsController> {
                               ),
                               child: controller.isLoading.value
                                   ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: SpinKitPumpingHeart(
+                                  height: 20,
+                                  width: 20,
+                                  child: SpinKitPumpingHeart(
                                     color: Colors.white,
                                     size: 25.0,
                                   )
                               )
                                   : FittedBox(
-                                // <-- اضيف هذا
                                 fit: BoxFit.scaleDown,
                                 child: Row(
                                   mainAxisSize:
-                                  MainAxisSize.min, // <-- واضبط هنا
+                                  MainAxisSize.min,
                                   mainAxisAlignment:
                                   MainAxisAlignment.center,
                                   children: const [
@@ -958,7 +907,6 @@ class MedicationsPage extends GetView<MedicationsController> {
                         ),
                         const SizedBox(height: 10),
 
-                        // Cancel Button
                         SizedBox(
                           width: double.infinity,
                           height: 48,
