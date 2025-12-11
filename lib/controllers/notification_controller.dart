@@ -45,7 +45,7 @@ Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
       default:
         // User tapped notification body - Navigate to HomePage
         print('ℹ️ Notification body tapped - Opening app');
-        Get.offAllNamed('/home');
+        Get.offAllNamed('/main');
         break;
     }
   } catch (e) {
