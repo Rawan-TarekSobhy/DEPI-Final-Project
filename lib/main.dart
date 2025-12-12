@@ -10,6 +10,7 @@ import 'package:reminder_app/services/documents_service.dart';
 import 'package:reminder_app/services/auth_service.dart';
 import 'package:reminder_app/core/binding_classes.dart';
 import 'package:reminder_app/services/connectivity_service.dart';
+import 'package:reminder_app/services/language_service.dart';
 import 'package:reminder_app/services/medications_service.dart';
 import 'package:reminder_app/services/notification_service.dart';
 import 'package:reminder_app/services/profile_service.dart';
@@ -33,6 +34,8 @@ import 'package:reminder_app/views/registration_page.dart';
 import 'package:reminder_app/views/splash_screen.dart';
 import 'package:reminder_app/views/upload_documents_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'language/app_language.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -150,6 +153,9 @@ void dispose() {
       theme: AppTheme.lightTheme(),
       darkTheme: AppTheme.darkTheme(),
       themeMode: ThemeService().theme,
+      translations: AppLanguage(),
+      locale: LanguageService().isEnglish() ? const Locale('en') : const Locale('ar'),
+      fallbackLocale: const Locale('en'),
       initialRoute: '/splash',
       initialBinding: BindingsBuilder(() {
         Get.lazyPut(() => AuthService(), fenix: true);

@@ -6,11 +6,14 @@ import 'package:reminder_app/data/entity/intake_records.dart';
 import 'package:reminder_app/data/entity/users.dart';
 import 'package:reminder_app/model/chatbot_model.dart';
 import 'package:reminder_app/services/chatbot_service.dart';
+import 'package:reminder_app/services/language_service.dart';
+
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class ChatbotController extends GetxController {
   final ChatbotService _chatbotService = ChatbotService();
+  final language = LanguageService();
 
   final messages = <ChatMessage>[].obs;
   final isLoading = false.obs;
@@ -117,7 +120,7 @@ class ChatbotController extends GetxController {
         partialResults: true,
         cancelOnError: true,
         listenMode: stt.ListenMode.confirmation,
-        localeId: 'ar-EG', // غيّره لـ 'en-US' لو عايز إنجليزي
+        localeId: language.isEnglish() ? 'en-US':'ar-EG'  ,
       );
     } catch (e) {
       print('❌ Error starting speech recognition: $e');

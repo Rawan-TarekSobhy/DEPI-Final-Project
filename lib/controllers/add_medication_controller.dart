@@ -15,6 +15,7 @@ import 'package:reminder_app/services/schedules_service.dart';
 import 'package:reminder_app/services/records_service.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../services/language_service.dart';
 import 'navigation_controller.dart';
 
 class AddMedicationController extends GetxController {
@@ -26,6 +27,7 @@ class AddMedicationController extends GetxController {
 
   final picker = ImagePicker();
   final SpeechToText speech = SpeechToText();
+  final language = LanguageService();
 
   final nameController = TextEditingController();
   final dosageController = TextEditingController();
@@ -204,7 +206,7 @@ class AddMedicationController extends GetxController {
         isListening.value = true;
         speech.listen(
           onResult: (result) => nameController.text = result.recognizedWords,
-          localeId: 'ar-EG',
+          localeId: language.isEnglish() ? 'en-US':'ar-EG'  ,
         );
       }
     } else {

@@ -45,8 +45,8 @@ class LoginPage extends GetView<LoginController> {
                         fit: BoxFit.contain,
                       ),
                       SizedBox(height: screenHeight * 0.025),
-                      const Text(
-                        'Welcome Back',
+                       Text(   ///remove const
+                        'Welcome Back'.tr,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -55,14 +55,14 @@ class LoginPage extends GetView<LoginController> {
                       ),
                       SizedBox(height: screenHeight * 0.005),
                       Text(
-                        'Your Health, Your Schedule',
+                        'Your Health, Your Schedule'.tr,
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       SizedBox(height: screenHeight * 0.035),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Email Address',
+                          'Email Address'.tr,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -84,7 +84,7 @@ class LoginPage extends GetView<LoginController> {
                           _formKey.currentState?.validate(); // use widget key
                         },
                         decoration: InputDecoration(
-                          hintText: 'Enter your email',
+                          hintText: 'Enter your email'.tr,
                           hintStyle: TextStyle(
                             color: Colors.grey[400],
                             fontSize: 13,
@@ -140,7 +140,7 @@ class LoginPage extends GetView<LoginController> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Password',
+                          'Password'.tr,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -168,7 +168,7 @@ class LoginPage extends GetView<LoginController> {
                           },
                           style: const TextStyle(fontSize: 14),
                           decoration: InputDecoration(
-                            hintText: 'Enter your password',
+                            hintText: 'Enter your password'.tr,
                             hintStyle: TextStyle(
                               color: Colors.grey[400],
                               fontSize: 13,
@@ -259,8 +259,8 @@ class LoginPage extends GetView<LoginController> {
                                     color: Colors.white,
                                     size: 20.0,
                                   )
-                                : const Text(
-                                    'Login',
+                                :  Text(   ///remove const
+                                    'Login'.tr,
                                     style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
@@ -277,7 +277,7 @@ class LoginPage extends GetView<LoginController> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            "Don't have an account? ",
+                            "Don't have an account? ".tr,
                             style: TextStyle(
                               color: Colors.grey[600],
                               fontSize: 12,
@@ -287,8 +287,8 @@ class LoginPage extends GetView<LoginController> {
                             onTap: () {
                               Get.toNamed('/register');
                             },
-                            child: const Text(
-                              'Sign Up',
+                            child:  Text(  ////remove const
+                              'Sign Up'.tr,
                               style: TextStyle(
                                 color: Color(0xFF4FC3F7),
                                 fontSize: 12,

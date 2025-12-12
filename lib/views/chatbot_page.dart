@@ -14,7 +14,7 @@ class ChatbotPage extends GetView<ChatbotController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Medical Assistant'),
+        title:  Text('Medical Assistant'.tr), ////remove const
         backgroundColor: Color(0xFF4FC3F7),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -29,7 +29,7 @@ class ChatbotPage extends GetView<ChatbotController> {
                       : Icons.lightbulb_outline,
                 ),
                 onPressed: controller.toggleSuggestions,
-                tooltip: 'Quick Suggestions',
+                tooltip: 'Quick Suggestions'.tr,
               );
             }
             return const SizedBox.shrink();
@@ -40,20 +40,20 @@ class ChatbotPage extends GetView<ChatbotController> {
             onPressed: () {
               Get.dialog(
                 AlertDialog(
-                  title: const Text('Clear Chat?'),
-                  content: const Text('This will delete all messages.'),
+                  title:  Text('Clear Chat?'.tr), ////remove const
+                  content:  Text('This will delete all messages.'.tr), ///// remove const
                   actions: [
                     TextButton(
                       onPressed: () => Get.back(),
-                      child: const Text('Cancel'),
+                      child:  Text('Cancel'.tr),////remove const
                     ),
                     TextButton(
                       onPressed: () {
                         controller.clearChat();
                         Get.back();
                       },
-                      child: const Text(
-                        'Clear',
+                      child:  Text(////remove const
+                        'Clear'.tr,
                         style: TextStyle(color: Colors.red),
                       ),
                     ),
@@ -61,7 +61,7 @@ class ChatbotPage extends GetView<ChatbotController> {
                 ),
               );
             },
-            tooltip: 'Clear Chat',
+            tooltip: 'Clear Chat'.tr,
           ),
         ],
       ),
@@ -142,8 +142,8 @@ class ChatbotPage extends GetView<ChatbotController> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Hi! I\'m Your Medical Assistant',
+             Text(  ////remove const
+              'Hi! I\'m Your Medical Assistant'.tr,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -152,8 +152,8 @@ class ChatbotPage extends GetView<ChatbotController> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Choose a suggestion below or type your question!',
+             Text(   ////remove const
+              'Choose a suggestion below or type your question!'.tr,
               style: TextStyle(
                 fontSize: 13,
                 color: Color(0xFF4FC3F7),
@@ -188,8 +188,8 @@ class ChatbotPage extends GetView<ChatbotController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                '💡 Quick Suggestions',
+               Text(   ////remove const
+                '💡 Quick Suggestions'.tr,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -562,8 +562,10 @@ Widget _buildInputField() {
                         vertical: 12,
                       ),
                     ),
+
                     maxLines: null,
                     textInputAction: TextInputAction.send,
+                    style: TextStyle(color: Colors.black87),
                     onSubmitted: (value) {
                       if (value.trim().isNotEmpty) {
                         controller.sendMessage(value);
@@ -656,7 +658,7 @@ Widget _buildVoiceRecognitionIndicator() {
           child: Obx(() {
             return Text(
               controller.recognizedText.value.isEmpty
-                  ? 'Listening... Speak now'
+                  ? 'Listening... Speak now'.tr
                   : controller.recognizedText.value,
               style: TextStyle(
                 fontSize: 14,

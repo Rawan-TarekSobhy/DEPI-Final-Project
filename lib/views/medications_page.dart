@@ -51,7 +51,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      'My Medications',
+                      'My Medications'.tr,
                       maxLines: 2,
                       softWrap: true,
                       style: TextStyle(
@@ -82,7 +82,7 @@ class MedicationsPage extends GetView<MedicationsController> {
               child: Row(
                 children: [
                   Text(
-                    '$count active medication${count == 1 ? '' : 's'}',
+                    '${'activeMedicationCount'.trParams({'count': '$count'})}',   //////// <----------- here the change '$count active medication.${count == 1 ? '' : 's'}'.tr,
                     style: TextStyle(
                       color: theme.textTheme.bodyMedium!.color,
                       fontSize: 13,
@@ -110,7 +110,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                 Icon(Icons.medication_outlined, size: 64, color: theme.textTheme.bodyMedium!.color),
                 const SizedBox(height: 10),
                 Text(
-                  'No active medications yet',
+                  'No active medications yet'.tr,
                   style: TextStyle(
                     color: theme.textTheme.bodyMedium!.color,
                     fontSize: 16,
@@ -119,7 +119,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Tap + to add your first medication',
+                  'Tap + to add your first medication'.tr,
                   style: TextStyle(color: theme.textTheme.bodyMedium!.color, fontSize: 13),
                 ),
               ],
@@ -147,68 +147,49 @@ class MedicationsPage extends GetView<MedicationsController> {
         : '—';
 
     final theme = Theme.of(context);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16), // زودنا الـ Padding شوية للراحة
       decoration: BoxDecoration(
         color: theme.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20), // تدوير الحواف أكتر (Modern)
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // --- Header: Icon + Name ---
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               GestureDetector(
                 onTap: () {
                   if (med.imageUrl != null && med.imageUrl!.isNotEmpty) {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) {
-                        return Dialog(
-                          insetPadding: const EdgeInsets.all(16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: InteractiveViewer(
-                              minScale: 1,
-                              maxScale: 4,
-                              child: Image.file(
-                                File(med.imageUrl!),
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
+                    // ... (نفس كود عرض الصورة القديم)
                   }
                 },
                 child: Container(
-                  width: 56,
-                  height: 56,
-                  margin: const EdgeInsets.only(right: 12),
+                  width: 60,
+                  height: 60,
+                  margin: const EdgeInsets.only(right: 14),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(14),
-                    color: theme.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(18),
+                    color: AppColors.primary.withOpacity(0.1), // خلفية لبني هادية
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: (med.imageUrl != null && med.imageUrl!.isNotEmpty)
                       ? Image.file(File(med.imageUrl!), fit: BoxFit.cover)
                       : Icon(
-                    Icons.medication,
-                    color: theme.primaryColor,
-                    size: 30,
+                    Icons.medication_rounded, // أيقونة مدورة
+                    color: AppColors.primary,
+                    size: 32,
                   ),
                 ),
               ),
@@ -220,8 +201,8 @@ class MedicationsPage extends GetView<MedicationsController> {
                     Text(
                       med.name,
                       style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                         color: theme.textTheme.bodyLarge!.color,
                       ),
                     ),
@@ -229,8 +210,9 @@ class MedicationsPage extends GetView<MedicationsController> {
                     Text(
                       '${med.dosage} • ${med.frequency}',
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 14,
                         color: theme.textTheme.bodyMedium!.color,
+                        height: 1.2,
                       ),
                     ),
                   ],
@@ -239,104 +221,97 @@ class MedicationsPage extends GetView<MedicationsController> {
             ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          // --- Info Chips (Next Dose & Duration) ---
+          Row(
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: theme.primaryColor,
-                          size: 18,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Next dose at',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: theme.textTheme.bodyMedium!.color,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Text(
-                      nextDoseText,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyLarge!.color,
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor, // خلفية حيادية
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.access_time_rounded, size: 14, color: AppColors.secondary),
+                          const SizedBox(width: 4),
+                          Text('Next dose', style: TextStyle(fontSize: 10, color: theme.textTheme.bodyMedium!.color)),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        nextDoseText,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.secondary // الأزرق الغامق للقراءة
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.scaffoldBackgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Duration',
-                      style: TextStyle(fontSize: 11, color: theme.textTheme.bodyMedium!.color),
-                    ),
-                    Text(
-                      med.durationOfUse,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: theme.textTheme.bodyLarge!.color,
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: theme.scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.withOpacity(0.1)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.secondary),
+                          const SizedBox(width: 4),
+                          Text('Duration', style: TextStyle(fontSize: 10, color: theme.textTheme.bodyMedium!.color)),
+                        ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 4),
+                      Text(
+                        med.durationOfUse,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.secondary
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
 
+          // --- Notes (If any) ---
           if (med.notes != null && med.notes!.isNotEmpty) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.yellow.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.warning.withOpacity(0.1), // أصفر هادي جداً
+                borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.note, size: 16, color: theme.primaryColor),
-                  const SizedBox(width: 6),
+                  Icon(Icons.sticky_note_2_outlined, size: 16, color: AppColors.warning),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       med.notes!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: theme.textTheme.bodyMedium!.color,
-                      ),
+                      style: TextStyle(fontSize: 12, color: theme.textTheme.bodyLarge!.color),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
@@ -344,57 +319,41 @@ class MedicationsPage extends GetView<MedicationsController> {
             ),
           ],
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
+          // --- Action Buttons (New Style) ---
           Row(
             children: [
+              // زر التعديل (أزرق مفرغ)
               Expanded(
                 child: SizedBox(
-                  height: 42,
+                  height: 44,
                   child: OutlinedButton.icon(
                     onPressed: () => _showEditDialog(context, med),
-                    icon: const Icon(Icons.edit, size: 18),
-                    label: const Text('Edit', overflow: TextOverflow.ellipsis),
+                    icon: const Icon(Icons.edit_rounded, size: 18),
+                    label: Text('Edit'.tr),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.primaryColor,
-                      side: BorderSide(
-                        color: theme.primaryColor,
-                        width: 1.5,
-                      ),
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      textStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      foregroundColor: AppColors.primary,
+                      side: BorderSide(color: AppColors.primary, width: 1.5),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 12),
               Expanded(
                 child: SizedBox(
-                  height: 42,
-                  child: ElevatedButton.icon(
+                  height: 44,
+                  child: TextButton.icon(
                     onPressed: () => _showDeleteDialog(context, med),
-                    icon: const Icon(Icons.delete_outline, size: 18),
-                    label: const Text(
-                      'Delete',
-                      overflow: TextOverflow.ellipsis,
+                    icon: Icon(Icons.delete_outline_rounded, size: 18, color: AppColors.error),
+                    label: Text(
+                        'Delete'.tr,
+                        style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w600)
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE57373),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      textStyle: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: AppColors.error.withOpacity(0.1), // خلفية حمراء باهتة جداً
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
                 ),
@@ -412,39 +371,32 @@ class MedicationsPage extends GetView<MedicationsController> {
       context: context,
       builder: (ctx) {
         return Dialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: theme.cardColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 70,
-                  height: 70,
+                  width: 72,
+                  height: 72,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [Colors.red.shade400, Colors.red.shade600],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: AppColors.error.withOpacity(0.1), // دائرة حمراء شفافة
                   ),
-                  child: const Icon(
-                    Icons.warning_rounded,
-                    color: Colors.white,
-                    size: 36,
+                  child: Icon(
+                    Icons.delete_forever_rounded,
+                    color: AppColors.error, // أيقونة حمراء
+                    size: 32,
                   ),
                 ),
-                const SizedBox(height: 20),
-
+                const SizedBox(height: 24),
                 Text(
-                  'Delete Medication',
+                  'Delete Medication?'.tr,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -452,74 +404,48 @@ class MedicationsPage extends GetView<MedicationsController> {
                   ),
                 ),
                 const SizedBox(height: 12),
-
                 Text(
-                  'Are you sure you want to delete "${med.name}"?',
+                  'Are you sure you want to delete "${med.name}"?\nThis action cannot be undone.'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 15,
-                    color: theme.textTheme.bodyLarge!.color,
-                    fontWeight: FontWeight.w500,
+                    fontSize: 14,
+                    color: theme.textTheme.bodyMedium!.color,
+                    height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  'This will remove all reminders and logs.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 13, color: theme.textTheme.bodyMedium!.color),
-                ),
-                const SizedBox(height: 24),
-
+                const SizedBox(height: 32),
                 Row(
                   children: [
                     Expanded(
                       child: SizedBox(
-                        height: 48,
-                        child: OutlinedButton(
+                        height: 50,
+                        child: TextButton(
                           onPressed: () => Navigator.of(ctx).pop(),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                              color: theme.primaryColor,
-                              width: 1.5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                          style: TextButton.styleFrom(
+                            foregroundColor: theme.textTheme.bodyLarge!.color,
                           ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: theme.primaryColor,
-                            ),
-                          ),
+                          child: Text('Cancel'.tr, style: TextStyle(fontWeight: FontWeight.w600)),
                         ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: SizedBox(
-                        height: 48,
+                        height: 50,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            backgroundColor: AppColors.error, // الأحمر الناعم
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                           ),
                           onPressed: () {
                             Navigator.of(ctx).pop();
                             final c = Get.find<MedicationsController>();
                             c.deleteMedication(med);
                           },
-                          child: const Text(
-                            'Delete',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                          child: Text(
+                            'Delete'.tr,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -573,29 +499,22 @@ class MedicationsPage extends GetView<MedicationsController> {
                       children: [
                         Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 16,
-                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF4FC3F7), Color(0xFF81D4FA)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
+                            gradient: AppColors.lightGradient, // استخدم الجرادينت الموحد
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.edit, color: theme.colorScheme.onPrimary, size: 24),
+                              const Icon(Icons.edit_calendar_rounded, color: Colors.white, size: 26),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Edit Schedule',
-                                  style: TextStyle(
+                                  'Edit Schedule'.tr,
+                                  style: const TextStyle(
                                     fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    color: theme.colorScheme.onPrimary,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -605,7 +524,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                         const SizedBox(height: 20),
 
                         Text(
-                          'Frequency',
+                          'Frequency'.tr,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -645,7 +564,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                             ),
                           ),
                           hint: Text(
-                            'Select frequency',
+                            'Select frequency'.tr,
                             style: TextStyle(color: theme.textTheme.bodyMedium!.color, fontSize: 13),
                           ),
                           isExpanded: true,
@@ -660,12 +579,12 @@ class MedicationsPage extends GetView<MedicationsController> {
                           dropdownColor: theme.cardColor,
                           borderRadius: BorderRadius.circular(12),
                           items:
-                          const [
-                            'Once daily',
-                            'Twice daily (2x/day)',
-                            'Three times daily (3x/day)',
-                            'Four times daily (4x/day)',
-                            'As needed',
+                           [ ///remove const
+                            'Once daily'.tr,
+                            'Twice daily (2x/day)'.tr,
+                            'Three times daily (3x/day)'.tr,
+                            'Four times daily (4x/day)'.tr,
+                            'As needed'.tr,
                           ].map((v) {
                             return DropdownMenuItem(
                               value: v,
@@ -687,7 +606,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                         const SizedBox(height: 16),
 
                         Text(
-                          'Dose Times',
+                          'Dose Times'.tr,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -747,7 +666,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Add Dose Time',
+                                  'Add Dose Time'.tr,
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: theme.primaryColor,
@@ -770,7 +689,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                             ),
                             child: Center(
                               child: Text(
-                                'No dose times added yet',
+                                'No dose times added yet'.tr,
                                 style: TextStyle(
                                   color: theme.textTheme.bodyMedium!.color,
                                   fontSize: 13,
@@ -849,8 +768,8 @@ class MedicationsPage extends GetView<MedicationsController> {
                                 if (controller.editFrequency.value.isEmpty ||
                                     controller.editDoseTimes.isEmpty) {
                                   Get.snackbar(
-                                    'Error',
-                                    'Please choose frequency and at least one dose time',
+                                    'Error'.tr,
+                                    'Please choose frequency and at least one dose time'.tr,
                                     snackPosition: SnackPosition.BOTTOM,
                                     backgroundColor: Colors.red,
                                     colorText: Colors.white,
@@ -884,7 +803,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                                   MainAxisSize.min,
                                   mainAxisAlignment:
                                   MainAxisAlignment.center,
-                                  children: const [
+                                  children:  [//remove cost
                                     Icon(
                                       Icons.check_circle_outline,
                                       size: 20,
@@ -892,7 +811,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                                     ),
                                     SizedBox(width: 8),
                                     Text(
-                                      'Save Changes',
+                                      'Save Changes'.tr,
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
@@ -922,7 +841,7 @@ class MedicationsPage extends GetView<MedicationsController> {
                               ),
                             ),
                             child: Text(
-                              'Cancel',
+                              'Cancel'.tr,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,

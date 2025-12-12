@@ -137,18 +137,18 @@ class UploadDocumentsController extends GetxController {
       // فحص النت
       final isConnected = await connectivityService.connected();
       if (!isConnected) {
-        Get.snackbar('Offline', 'File not downloaded yet. Connect to internet to view.',
+        Get.snackbar('Offline'.tr, 'File not downloaded yet. Connect to internet to view.'.tr,
             backgroundColor: Colors.grey[800]!, colorText: Colors.white);
         return;
       }
 
       // فيه نت -> نحمل ونخبيه جوه التطبيق
-      Get.snackbar('Processing', 'Downloading for offline view...',
+      Get.snackbar('Processing', 'Downloading for offline view...'.tr,
           showProgressIndicator: true, backgroundColor: Colors.lightBlue, colorText: Colors.white);
 
       try {
         final fileBytes = await supa.DownloadedDocUrl(doc.file_Url);
-        if (fileBytes.isEmpty) throw Exception("Empty file");
+        if (fileBytes.isEmpty) throw Exception("Empty file".tr);
 
         // 💡 الحفظ في مكان سري وآمن داخل التطبيق
         final appDir = await getApplicationDocumentsDirectory();
@@ -168,7 +168,7 @@ class UploadDocumentsController extends GetxController {
         }
 
       } catch (e) {
-        Get.snackbar('Error', 'Failed to download file.', backgroundColor: Colors.red);
+        Get.snackbar('Error'.tr, 'Failed to download file.'.tr, backgroundColor: Colors.red);
         return;
       }
     }
@@ -180,7 +180,7 @@ class UploadDocumentsController extends GetxController {
 
       final result = await OpenFilex.open(fileToOpen.path);
       if (result.type != ResultType.done) {
-        Get.snackbar('Error', 'Could not open file: ${result.message}', backgroundColor: Colors.red);
+        Get.snackbar('Error'.tr, 'Could not open file: ${result.message}'.tr, backgroundColor: Colors.red);
       }
     }
   }
@@ -190,7 +190,7 @@ class UploadDocumentsController extends GetxController {
   // ========================================================================
 
   Future<void> downloadDocument(Documents doc) async {
-    Get.snackbar('Exporting', 'Saving to Downloads...', backgroundColor: Colors.blue);
+    Get.snackbar('Exporting'.tr, 'Saving to Downloads...'.tr, backgroundColor: Colors.blue);
 
     try {
       List<int> bytes;
@@ -204,7 +204,7 @@ class UploadDocumentsController extends GetxController {
         bytes = await supa.DownloadedDocUrl(doc.file_Url);
       }
 
-      if (bytes.isEmpty) throw Exception('File is empty.');
+      if (bytes.isEmpty) throw Exception('File is empty.'.tr);
 
       final nameWithoutExt = doc.file_name.contains('.')
           ? doc.file_name.split('.').first
@@ -226,11 +226,11 @@ class UploadDocumentsController extends GetxController {
         );
       }
 
-      Get.snackbar('Success', 'File saved to Downloads!', backgroundColor: Colors.green);
+      Get.snackbar('Success'.tr, 'File saved to Downloads!'.tr, backgroundColor: Colors.green);
 
     } catch (e) {
       print('Download Error: $e');
-      Get.snackbar('Error', 'Export failed.', backgroundColor: Colors.red);
+      Get.snackbar('Error'.tr, 'Export failed.'.tr, backgroundColor: Colors.red);
     }
   }
 
@@ -246,14 +246,14 @@ class UploadDocumentsController extends GetxController {
       final PlatformFile file = result.files.single;
       if (file.path != null) {
         selectedFile.value = XFile(file.path!);
-        Get.snackbar('Selected', 'File ready.', backgroundColor: Colors.blue.withOpacity(0.5));
+        Get.snackbar('Selected'.tr, 'File ready.'.tr, backgroundColor: Colors.blue.withOpacity(0.5));
       }
     }
   }
 
   Future<void> uploadDocument() async {
     if (selectedFile.value == null) {
-      Get.snackbar('Alert', 'Please select a file first.', backgroundColor: Colors.orange);
+      Get.snackbar('Alert'.tr, 'Please select a file first.'.tr, backgroundColor: Colors.orange);
       return;
     }
 
@@ -283,17 +283,17 @@ class UploadDocumentsController extends GetxController {
           await supa.saveDocumentMetadata(syncedDoc);
           document.insert(0, syncedDoc);
 
-          Get.snackbar('Success', 'Uploaded!', backgroundColor: Colors.green);
+          Get.snackbar('Success'.tr, 'Uploaded!'.tr, backgroundColor: Colors.green);
         } else {
-          throw Exception('Upload failed.');
+          throw Exception('Upload failed.'.tr);
         }
       } catch (e) {
         document.insert(0, newDocument.copyWith(is_synced: false));
-        Get.snackbar('Saved Offline', 'Upload failed, saved locally.', backgroundColor: Colors.orange);
+        Get.snackbar('Saved Offline'.tr, 'Upload failed, saved locally.'.tr, backgroundColor: Colors.orange);
       }
     } else {
       document.insert(0, newDocument.copyWith(is_synced: false));
-      Get.snackbar('Offline', 'Saved locally.', backgroundColor: Colors.orange);
+      Get.snackbar('Offline'.tr, 'Saved locally.'.tr, backgroundColor: Colors.orange);
     }
 
     saveDocumentsToLocal();
@@ -366,10 +366,10 @@ class UploadDocumentsController extends GetxController {
         document.removeWhere((doc) => doc.docId == docId);
         saveDocumentsToLocal();
 
-        Get.snackbar('Success', 'Deleted.', backgroundColor: Colors.green);
+        Get.snackbar('Success'.tr, 'Deleted.'.tr, backgroundColor: Colors.green);
       }
     } catch (e) {
-      Get.snackbar('Error', 'Delete failed.', backgroundColor: Colors.red);
+      Get.snackbar('Error'.tr, 'Delete failed.'.tr, backgroundColor: Colors.red);
     } finally {
       isLoading.value = false;
     }
@@ -386,7 +386,7 @@ class UploadDocumentsController extends GetxController {
       document[index] = doc.copyWith(local_direct: null);
     }
     saveDocumentsToLocal();
-    Get.snackbar('Cleaned', 'Storage cleared.', backgroundColor: Colors.grey);
+    Get.snackbar('Cleaned'.tr, 'Storage cleared.'.tr, backgroundColor: Colors.grey);
   }
 
   String formatDateTimeManual(DateTime? dateTime) {

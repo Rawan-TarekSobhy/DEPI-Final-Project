@@ -25,7 +25,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
     ever(controller.errorMessage, (String? message) {
       if (message != null && message.isNotEmpty) {
         Get.snackbar(
-          'Error',
+          'Error'.tr,
           message,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
@@ -66,7 +66,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      'Add Medication',
+                      'Add Medication'.tr,
                       maxLines: 2,
                       softWrap: true,
                       style: TextStyle(
@@ -129,7 +129,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
               Flexible(
                 fit: FlexFit.loose,
                 child: Text(
-                  'Medication Photo (Optional)',
+                  'Medication Photo (Optional)'.tr,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -225,7 +225,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Tap to add a photo',
+                      'Tap to add a photo'.tr,
                       style: TextStyle(
                         fontSize: 14,
                         color: Get.theme.textTheme.bodyLarge!.color,
@@ -235,7 +235,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Helps you recognize pills easily',
+                      'Helps you recognize pills easily'.tr,
                       style: TextStyle(
                         fontSize: 12,
                         color: Get.theme.textTheme.bodyMedium!.color,
@@ -264,15 +264,15 @@ class AddMedicationPage extends GetView<AddMedicationController> {
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt_outlined),
-                title: const Text('Camera'),
+                title:  Text('Camera'.tr),//remove const
                 onTap: () {
                   controller.takeImageFromCamera();
                   Get.back();
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.photo_library_outlined),
-                title: const Text('Gallery'),
+                leading: const Icon(Icons.photo_library_outlined), //remove const
+                title:  Text('Gallery'.tr),
                 onTap: () {
                   controller.pickImageFromGallery();
                   Get.back();
@@ -295,7 +295,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
               Icon(Icons.info_outline, size: 18, color: Get.theme.primaryColor),
               const SizedBox(width: 8),
               Text(
-                'Basic Information',
+                'Basic Information'.tr,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -306,8 +306,8 @@ class AddMedicationPage extends GetView<AddMedicationController> {
           ),
           const SizedBox(height: 15.0),
           _buildInputFieldWithMicWithController(
-            label: 'Medication Name *',
-            hint: 'e.g., Aspirin',
+            label: 'Medication Name *'.tr,
+            hint: 'e.g., Aspirin'.tr,
             controller: controller.nameController,
             withMic: true,
           ),
@@ -319,8 +319,8 @@ class AddMedicationPage extends GetView<AddMedicationController> {
           _buildDurationDropdown(controller),
           const SizedBox(height: 16.0),
           _buildInputFieldWithMicWithController(
-            label: 'Notes (Optional)',
-            hint: 'e.g., Take with food',
+            label: 'Notes (Optional)'.tr,
+            hint: 'e.g., Take with food'.tr,
             controller: controller.notesController,
             maxLines: 3,
           ),
@@ -342,7 +342,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
               Icon(Icons.schedule, size: 18, color: Get.theme.primaryColor),
               const SizedBox(width: 8),
               Text(
-                'Dose Times *',
+                'Dose Times *'.tr,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -358,7 +358,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
             final max = controller.maxDoseTimesAllowed;
             if (max == 0) return const SizedBox.shrink(); // As needed
             return Text(
-              'Please add exactly $max times',
+              'Please add exactly $max times'.tr,
               style: TextStyle(fontSize: 12, color: Get.theme.primaryColor.withOpacity(0.8)),
             );
           }),
@@ -409,7 +409,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Add Dose Time',
+                    'Add Dose Time'.tr,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
@@ -438,7 +438,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                 ),
                 child: Center(
                   child: Text(
-                    'No dose times added yet',
+                    'No dose times added yet'.tr,
                     style: TextStyle(
                       color: Get.theme.textTheme.bodyMedium!.color,
                       fontSize: 13,
@@ -540,7 +540,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
               ),
               const SizedBox(width: 10),
               Text(
-                'Add Medication',
+                'Add Medication'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -655,7 +655,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Dosage *',
+          'Dosage *'.tr,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -718,8 +718,8 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                 ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
-                'mg',
+              child:  Text(  //remove const
+                'mg'.tr,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
@@ -738,7 +738,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Frequency *',
+          'Frequency *'.tr,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -753,7 +753,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                 : controller.frequency.value,
             decoration: _dropdownDecoration(),
             hint: Text(
-              'Select frequency',
+              'Select frequency'.tr,
               style: TextStyle(
                 color: Get.theme.textTheme.bodyMedium!.color!.withOpacity(0.6),
                 fontSize: 14,
@@ -809,7 +809,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Duration of Use *',
+          'Duration of Use *'.tr,
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -824,7 +824,7 @@ class AddMedicationPage extends GetView<AddMedicationController> {
                 : controller.duration.value,
             decoration: _dropdownDecoration(),
             hint: Text(
-              'Select duration',
+              'Select duration'.tr,
               style: TextStyle(
                 color: Get.theme.textTheme.bodyMedium!.color!.withOpacity(0.6),
                 fontSize: 14,

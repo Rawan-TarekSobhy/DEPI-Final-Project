@@ -109,7 +109,7 @@ class MainNavigation extends GetView<NavigationController> {
                     Icons.home_rounded,
                     color: theme.primaryColor,
                   ),
-                  label: 'Home',
+                  label: 'Home'.tr,
                 ),
                 NavigationDestination(
                   icon: Icon(
@@ -122,7 +122,7 @@ class MainNavigation extends GetView<NavigationController> {
                     Icons.medication_rounded,
                     color: theme.primaryColor,
                   ),
-                  label: 'Medications',
+                  label: 'Medications'.tr,
                 ),
                 NavigationDestination(
                   icon: Icon(
@@ -135,7 +135,7 @@ class MainNavigation extends GetView<NavigationController> {
                     Icons.format_list_bulleted_rounded,
                     color: theme.primaryColor,
                   ),
-                  label: 'Log',
+                  label: 'Log'.tr,
                 ),
                 NavigationDestination(
                   icon: Icon(
@@ -148,7 +148,7 @@ class MainNavigation extends GetView<NavigationController> {
                     Icons.person_rounded,
                     color: theme.primaryColor,
                   ),
-                  label: 'Profile',
+                  label: 'Profile'.tr,
                 ),
               ],
             ),

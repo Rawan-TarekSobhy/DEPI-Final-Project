@@ -46,7 +46,7 @@ Widget _homeTab(BuildContext context, double h, double w) {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Quick Actions',
+                    'Quick Actions'.tr,
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
@@ -61,17 +61,17 @@ Widget _homeTab(BuildContext context, double h, double w) {
                   Expanded(
                     child: _quickActionButton(
                       Icons.add_circle_rounded,
-                      'Add Med',
-                      const Color(0xFF4FC3F7),
-                          () => Get.toNamed('/addMedication'),
+                      'Add Med'.tr,
+                      AppColors.actionAddMed,
+                       () => Get.toNamed('/addMedication'),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _quickActionButton(
                       Icons.smart_toy_rounded,
-                      'Med Assistant',
-                      const Color.fromARGB(255, 255, 145, 0),
+                      'Med Assistant'.tr,
+                      AppColors.actionPharmacy,
                           () => Get.toNamed('/chatbot'),
                     ),
                   ),
@@ -79,7 +79,7 @@ Widget _homeTab(BuildContext context, double h, double w) {
                   Expanded(
                     child: _quickActionButton(
                       Icons.local_pharmacy_rounded,
-                      'Pharmacies',
+                      'Pharmacies'.tr,
                       const Color(0xFFFF7043),
                           () async {
                         final connectivityService =
@@ -88,8 +88,8 @@ Widget _homeTab(BuildContext context, double h, double w) {
 
                         if (!connected) {
                           Get.snackbar(
-                            'No internet',
-                            'You need an internet connection to view nearby pharmacies.',
+                            'No internet'.tr,
+                            'You need an internet connection to view nearby pharmacies.'.tr,
                             backgroundColor: Colors.red,
                             colorText: Colors.white,
                             snackPosition: SnackPosition.TOP,
@@ -124,7 +124,7 @@ Widget _homeTab(BuildContext context, double h, double w) {
               ),
               const SizedBox(width: 6),
               Text(
-                "Today's Schedule",
+                "Today's Schedule".tr,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -159,7 +159,7 @@ Widget _homeTab(BuildContext context, double h, double w) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Text(
-                  'No doses scheduled for today',
+                  'No doses scheduled for today'.tr,
                   style: TextStyle(
                     fontSize: 13,
                     color: theme.textTheme.bodyMedium!.color,
@@ -181,16 +181,16 @@ Widget _homeTab(BuildContext context, double h, double w) {
 
                 switch (status) {
                   case 'taken':
-                    statusColor = const Color(0xFF25A864);
-                    statusText = 'Taken';
+                    statusColor = AppColors.success;
+                    statusText = 'Taken'.tr;
                     break;
                   case 'missed':
-                    statusColor = const Color(0xFFE57373);
-                    statusText = 'Missed';
+                    statusColor = AppColors.error;
+                    statusText = 'Missed'.tr;
                     break;
                   default:
-                    statusColor = const Color(0xFFF5A623);
-                    statusText = 'Pending';
+                    statusColor = AppColors.warning;
+                    statusText = 'Pending'.tr;
                 }
 
                 return Container(
@@ -290,7 +290,7 @@ Widget _homeTab(BuildContext context, double h, double w) {
                               ),
                               elevation: 2,
                             ),
-                            child: const Row(
+                            child:  Row(  //removed const
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
@@ -300,7 +300,7 @@ Widget _homeTab(BuildContext context, double h, double w) {
                                 ),
                                 SizedBox(width: 6),
                                 Text(
-                                  'Mark as Taken',
+                                  'Mark as Taken'.tr,
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
@@ -367,7 +367,7 @@ void _showIntakeDialog(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    'Medication Intake',
+                    'Medication Intake'.tr,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -376,7 +376,7 @@ void _showIntakeDialog(
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Did you take your medication?',
+                    'Did you take your medication?'.tr,
                     style: TextStyle(
                       fontSize: 13,
                       color: theme.textTheme.bodyMedium!.color,
@@ -416,7 +416,7 @@ void _showIntakeDialog(
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Scheduled: $time',
+                    'Scheduled: $time'.tr,
                     style: TextStyle(
                       fontSize: 13,
                       color: theme.textTheme.bodyMedium!.color,
@@ -434,14 +434,14 @@ void _showIntakeDialog(
                               Navigator.of(ctx).pop();
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4CAF50),
+                              backgroundColor: AppColors.success,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               elevation: 1,
                             ),
-                            child: const Text(
-                              'Yes, I took it',
+                            child: Text(
+                              'Yes, I took it'.tr,  //removed const
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
@@ -462,19 +462,19 @@ void _showIntakeDialog(
                             },
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(
-                                color: Color(0xFFE57373),
+                                color: AppColors.error,
                                 width: 1.5,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                            child: const Text(
-                              "No, I missed it",
+                            child:  Text(                //removed const
+                              "No, I missed it".tr,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFFE57373),
+                                color: AppColors.error,
                               ),
                             ),
                           ),
@@ -489,7 +489,7 @@ void _showIntakeDialog(
                     child: TextButton(
                       onPressed: () => Navigator.of(ctx).pop(),
                       child: Text(
-                        'Cancel',
+                        'Cancel'.tr,
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
@@ -559,6 +559,7 @@ Widget _buildHeader(
               ),
             ),
             const SizedBox(width: 10),
+
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -572,7 +573,7 @@ Widget _buildHeader(
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Your Health, Your Schedule',
+                  'Your Health, Your Schedule'.tr,
                   style: TextStyle(
                     color: theme.textTheme.bodyMedium!.color,
                     fontSize: 12,
@@ -590,7 +591,7 @@ Widget _buildHeader(
           children: [
             Obx(
                   () => Text(
-                controller.greeting.value,
+                controller.greeting.value.tr,
                 style: TextStyle(
                   color: theme.textTheme.bodyLarge!.color,
                   fontSize: 22,
@@ -622,6 +623,18 @@ Widget _buildHeader(
                 onPressed: controller.toggleDndMode,
               ),
             ),
+            const SizedBox(width: 8),
+            Obx(
+                  () => IconButton(
+                icon: Icon(
+                  controller.isEnglish.value
+                      ? Icons.language_outlined // show "AR" icon or globe when in English
+                      : Icons.translate,         // show "EN" icon when in Arabic
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                onPressed: controller.toggleLanguage,
+              ),
+            ),
           ],
         ),
 
@@ -642,7 +655,7 @@ Widget _buildHeader(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Current Time',
+                    'Current Time'.tr,
                     style: TextStyle(
                       color: theme.textTheme.bodyMedium!.color,
                       fontSize: 13,

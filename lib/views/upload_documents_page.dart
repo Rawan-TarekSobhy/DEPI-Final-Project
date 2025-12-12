@@ -19,13 +19,13 @@ class UploadDocumentspage extends StatelessWidget {
     Widget modalWidget() {
       final theme = Theme.of(context);
       return AlertDialog(
-        title: Text('Upload Document', style: TextStyle(color: theme.textTheme.bodyLarge!.color)),
+        title: Text('Upload Document'.tr, style: TextStyle(color: theme.textTheme.bodyLarge!.color)),
         // محتوى النافذة المنبثقة
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Select PDF File', style: TextStyle(fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge!.color)),
+            Text('Select PDF File'.tr, style: TextStyle(fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge!.color)),
             const SizedBox(height: 10),
 
             // زر اختيار الملف التفاعلي
@@ -33,7 +33,7 @@ class UploadDocumentspage extends StatelessWidget {
               onPressed: controller.pickPDF,
               icon: const Icon(Icons.upload_file),
               label: Text(
-                controller.selectedFile.value?.name ?? 'Choose PDF File',
+                controller.selectedFile.value?.name ?? 'Choose PDF File'.tr,
                 overflow: TextOverflow.ellipsis,
               ),
               style: OutlinedButton.styleFrom(
@@ -44,7 +44,7 @@ class UploadDocumentspage extends StatelessWidget {
 
             const SizedBox(height: 10),
             Text(
-              'PDF files only, max 10 MB',
+              'PDF files only, max 10 MB'.tr,
               style: TextStyle(fontSize: 12, color: theme.textTheme.bodyMedium!.color),
             ),
           ],
@@ -54,7 +54,7 @@ class UploadDocumentspage extends StatelessWidget {
         actionsPadding: const EdgeInsets.all(16),
         actions: <Widget>[
           TextButton(
-            child: Text('Cancel', style: TextStyle(color: theme.textTheme.bodyMedium!.color)),
+            child: Text('Cancel'.tr, style: TextStyle(color: theme.textTheme.bodyMedium!.color)),
             onPressed: () {
               controller.selectedFile.value = null;
               Get.back();
@@ -75,7 +75,7 @@ class UploadDocumentspage extends StatelessWidget {
             ),
             child: controller.isLoading.value
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Upload'),
+                :  Text('Upload'.tr), ///remove const
           )),
         ],
       );
@@ -236,7 +236,7 @@ class UploadDocumentspage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(onTap: () => Get.back(), child: Icon(Icons.arrow_back_ios, color: theme.colorScheme.onPrimary)),
-                Text('Documents', style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
+                Text('Documents'.tr, style: TextStyle(color: theme.colorScheme.onPrimary, fontSize: 22, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 24),
               ],
             ),
@@ -250,7 +250,7 @@ class UploadDocumentspage extends StatelessWidget {
               children: [
                 // العنوان التفاعلي لعدد المستندات
                 Obx(() => Text(
-                  'Your Documents (${controller.document.length})',
+                  'Your Documents (${controller.document.length})'.tr, /////<-----
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge!.color),
                 )),
 
@@ -281,7 +281,7 @@ class UploadDocumentspage extends StatelessWidget {
                 return Center(child: SpinKitPumpingHeart(color: theme.primaryColor,));
               }
               if (controller.document.isEmpty) {
-                return Center(child: Text('Upload your Documents,Records and Descriptions here', style: TextStyle(color: theme.textTheme.bodyMedium!.color)));
+                return Center(child: Text('Upload your Documents,Records and Descriptions here'.tr, style: TextStyle(color: theme.textTheme.bodyMedium!.color)));
               }
 
               return RefreshIndicator(
@@ -293,7 +293,7 @@ class UploadDocumentspage extends StatelessWidget {
                 ListView( // لازم ListView عشان السحب يشتغل حتى لو فاضية
                   children: [
                     const SizedBox(height: 200),
-                    Center(child: Text('No documents found. Pull to refresh.', style: TextStyle(color: theme.textTheme.bodyMedium!.color))),
+                    Center(child: Text('No documents found. Pull to refresh.'.tr, style: TextStyle(color: theme.textTheme.bodyMedium!.color))),
                   ],
                 )
                     :

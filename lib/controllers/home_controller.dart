@@ -11,6 +11,8 @@ import 'package:reminder_app/services/notification_service.dart';
 import 'package:reminder_app/services/records_service.dart';
 import 'package:reminder_app/services/theme_service.dart';
 
+import '../services/language_service.dart';
+
 class HomeController extends GetxController {
   var currentTime = "".obs;
   var currentDate = "".obs;
@@ -18,7 +20,7 @@ class HomeController extends GetxController {
   var greeting = ''.obs;
   var isDark = false.obs;
   late final ThemeService themeService;
-
+  RxBool isEnglish = true.obs;  //for lang
   final todaysRecords = <IntakeRecord>[].obs;
   final todaysMeds = <Medication>[].obs;
   final isLoading = false.obs;
@@ -27,10 +29,12 @@ class HomeController extends GetxController {
   late final AuthService authService = Get.find<AuthService>();
   late final ConnectivityService _connectivityService = Get.find<ConnectivityService>();
   late final RecordsService recordsService = Get.find<RecordsService>();
-
+  late final LanguageService languageService;
   @override
   void onInit() {
     super.onInit();
+    languageService = LanguageService();
+    isEnglish.value = languageService.isEnglish();
     updateTime();
     timer = Timer.periodic(const Duration(seconds: 30), (_) {
       updateTime();
@@ -39,6 +43,10 @@ class HomeController extends GetxController {
     themeService = ThemeService();
     isDark.value = themeService.isDarkMode();
     isDndActive.value = NotificationService().currentDndStatus;
+  }
+  void toggleLanguage() {
+    languageService.toggleLanguage();
+    isEnglish.value = languageService.isEnglish();
   }
 
     void toggleTheme() {
@@ -52,16 +60,16 @@ class HomeController extends GetxController {
     if (isDndActive.value == true) {
       await NotificationService().enableDonotdisturb();
       Get.snackbar(
-        'Mode Active',
-        "Don't Disturb Mode ON 🔇",
+        'Mode Active'.tr,
+        "Don't Disturb Mode ON 🔇".tr,
         backgroundColor: Colors.red,
         colorText: Colors.black,
       );
     } else {
       await NotificationService().disableDonotdisturb(userid!);
       Get.snackbar(
-        'Mode Disabled',
-        "Notifications Enabled 🔔",
+        'Mode Disabled'.tr,
+        "Notifications Enabled 🔔".tr,
         backgroundColor: Colors.green,
         colorText: Colors.white,
       );

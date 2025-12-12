@@ -31,7 +31,7 @@ class ProfilePage extends GetView<ProfileController> {
           if (u == null) {
             return Center(
               child: Text(
-                'No user data found',
+                'No user data found'.tr,
                 style: TextStyle(
                   fontSize: 16,
                   color: theme.textTheme.bodyMedium!.color,
@@ -80,7 +80,7 @@ class ProfilePage extends GetView<ProfileController> {
                 const SizedBox(height: 4),
 
                 Text(
-                  'Personal Information',
+                  'Personal Information'.tr,
                   style: TextStyle(
                     fontSize: 13,
                     color: theme.textTheme.bodyMedium!.color,
@@ -96,7 +96,7 @@ class ProfilePage extends GetView<ProfileController> {
                           Get.toNamed('/documents');                        },
                         child: _smallCard(
                           icon: Icons.description_outlined,
-                          title: 'Documents',
+                          title: 'Documents'.tr,
                         ),
                       ),
                     ),
@@ -128,7 +128,7 @@ class ProfilePage extends GetView<ProfileController> {
                         children: [
                           Expanded(
                             child: Text(
-                              'Personal Information',
+                              'Personal Information'.tr,
                               style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.w600,
@@ -145,7 +145,7 @@ class ProfilePage extends GetView<ProfileController> {
                             onPressed: () => _showEditDialog(context, u),
                           ),
                           Text(
-                            'Edit',
+                            'Edit'.tr,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -156,14 +156,14 @@ class ProfilePage extends GetView<ProfileController> {
                       ),
                       const SizedBox(height: 8),
 
-                      _infoRow('Full Name', u.name),
-                      _infoRow('Age', u.age ?? '—'),
-                      _infoRow('Email', u.email),
-                      _infoRow('Gender', u.gender ?? '—'),
+                      _infoRow('Full Name'.tr, u.name),
+                      _infoRow('Age'.tr, u.age ?? '—'),
+                      _infoRow('Email'.tr, u.email),
+                      _infoRow('Gender'.tr, u.gender ?? '—'),
                       const SizedBox(height: 4),
-                      _infoRow('Blood Type', u.bloodType ?? '—'),
-                      _infoRow('Height', u.height ?? '—'),
-                      _infoRow('Weight', u.weight ?? '—'),
+                      _infoRow('Blood Type'.tr, u.bloodType ?? '—'),
+                      _infoRow('Height'.tr, u.height ?? '—'),
+                      _infoRow('Weight'.tr, u.weight ?? '—'),
                     ],
                   ),
                 ),
@@ -240,7 +240,7 @@ class ProfilePage extends GetView<ProfileController> {
                                             const SizedBox(width: 10),
                                             Expanded(
                                               child: Text(
-                                                'Logout',
+                                                'Logout'.tr,
                                                 style: TextStyle(
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.w700,
@@ -255,7 +255,7 @@ class ProfilePage extends GetView<ProfileController> {
                                       const SizedBox(height: 18),
 
                                       Text(
-                                        'Are you sure you want to log out?',
+                                        'Are you sure you want to log out?'.tr,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 14,
@@ -287,7 +287,7 @@ class ProfilePage extends GetView<ProfileController> {
                                                   ),
                                                 ),
                                                 child: Text(
-                                                  'Cancel',
+                                                  'Cancel'.tr,
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
@@ -316,8 +316,8 @@ class ProfilePage extends GetView<ProfileController> {
                                                   ),
                                                   elevation: 1,
                                                 ),
-                                                child: const Text(
-                                                  'Logout',
+                                                child:  Text( /////remove const
+                                                  'Logout'.tr,
                                                   style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w600,
@@ -350,8 +350,8 @@ class ProfilePage extends GetView<ProfileController> {
                       ),
                     ),
                     icon: const Icon(Icons.logout, color: Colors.white),
-                    label: const Text(
-                      'Logout',
+                    label:  Text(   ////remove const
+                      'Logout'.tr,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -500,7 +500,7 @@ void _showEditDialog(BuildContext context, User u) {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'Edit Personal Information',
+                              'Edit Personal Information'.tr,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -519,13 +519,13 @@ void _showEditDialog(BuildContext context, User u) {
                       children: [
                         Expanded(
                           flex: 3,
-                          child: _textField('Full Name', nameCtrl),
+                          child: _textField('Full Name'.tr, nameCtrl),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           flex: 2,
                           child: _textField(
-                            'Age',
+                            'Age'.tr,
                             ageCtrl,
                             keyboardType: TextInputType.number,
                           ),
@@ -536,7 +536,7 @@ void _showEditDialog(BuildContext context, User u) {
                     const SizedBox(height: 12),
 
                     _textField(
-                      'Email',
+                      'Email'.tr,
                       emailCtrl,
                       keyboardType: TextInputType.emailAddress,
                       read: true
@@ -544,22 +544,22 @@ void _showEditDialog(BuildContext context, User u) {
 
                     const SizedBox(height: 12),
 
-                    _textField('Gender', genderCtrl),
+                    _textField('Gender'.tr, genderCtrl),
 
                     const SizedBox(height: 12),
 
                     Row(
                       children: [
                         Expanded(
-                          child: _textField('Blood Type', bloodCtrl),
+                          child: _textField('Blood Type'.tr, bloodCtrl),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: _textField('Height', heightCtrl),
+                          child: _textField('Height'.tr, heightCtrl),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: _textField('Weight', weightCtrl),
+                          child: _textField('Weight'.tr, weightCtrl),
                         ),
                       ],
                     ),
@@ -627,7 +627,7 @@ void _showEditDialog(BuildContext context, User u) {
                                   )
                           )
                               : Text(
-                            'Save Changes',
+                            'Save Changes'.tr,
                             style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -646,7 +646,7 @@ void _showEditDialog(BuildContext context, User u) {
                       child: TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: Text(
-                          'Cancel',
+                          'Cancel'.tr,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,

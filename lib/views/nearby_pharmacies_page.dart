@@ -54,7 +54,7 @@ class NearbyPharmaciesPage extends GetView<NearbyPharmaciesController> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Nearby',
+                            'Nearby'.tr,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -94,7 +94,7 @@ class NearbyPharmaciesPage extends GetView<NearbyPharmaciesController> {
                             child: TextField(
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Search pharmacies...',
+                                hintText: 'Search pharmacies...'.tr,
                                 hintStyle: TextStyle(
                                   fontSize: 14,
                                   color: theme.textTheme.bodyMedium!.color,
@@ -150,7 +150,7 @@ class NearbyPharmaciesPage extends GetView<NearbyPharmaciesController> {
           ElevatedButton.icon(
             onPressed: controller.fetchNearbyPharmacies,
             icon: const Icon(Icons.refresh, size: 18),
-            label: const Text('Try Again'),
+            label:  Text('Try Again'.tr),   ////remove const
             style: ElevatedButton.styleFrom(
               backgroundColor: theme.primaryColor,
               foregroundColor: Colors.white,
@@ -180,7 +180,7 @@ class NearbyPharmaciesPage extends GetView<NearbyPharmaciesController> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'No pharmacies found nearby',
+                        'No pharmacies found nearby'.tr,
                         style: TextStyle(fontSize: 13, color: theme.textTheme.bodyMedium!.color),
                       ),
                     ],
@@ -212,7 +212,7 @@ class NearbyPharmaciesPage extends GetView<NearbyPharmaciesController> {
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            'All Pharmacies',
+                            'All Pharmacies'.tr,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -352,7 +352,7 @@ class _PharmacyCard extends StatelessWidget {
       if (tags.addrCity != null) tags.addrCity,
     ].whereType<String>().toList();
 
-    final address = addressParts.isEmpty ? 'No address' : addressParts.join(', ');
+    final address = addressParts.isEmpty ? 'No address'.tr : addressParts.join(', ');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
@@ -375,7 +375,7 @@ class _PharmacyCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  tags.name ?? 'Unknown pharmacy',
+                  tags.name ?? 'Unknown pharmacy'.tr,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -459,8 +459,8 @@ class _PharmacyCard extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onDirections,
               icon: const Icon(Icons.navigation, size: 14, color: Colors.white),
-              label: const Text(
-                'Directions',
+              label:  Text(    ////remove const
+                'Directions'.tr,
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.white,

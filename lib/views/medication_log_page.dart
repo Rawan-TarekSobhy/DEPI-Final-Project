@@ -48,14 +48,14 @@ class MedicationLogPage extends StatelessWidget {
   // نروح لتبويب الـ Home (index 0)
   nav.navigateToIndex(0);
 },
-      
+
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Medication Log',
+                      'Medication Log'.tr,
                       maxLines: 1,
                       style: TextStyle(
                         color: theme.textTheme.bodyLarge!.color,
@@ -129,7 +129,7 @@ class MedicationLogPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Adherence Summary',
+                'Adherence Summary'.tr,
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -193,7 +193,7 @@ class MedicationLogPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Taken',
+                        'Taken'.tr,
                         style: TextStyle(
                           fontSize: 11,
                           color: theme.textTheme.bodyLarge!.color,
@@ -235,7 +235,7 @@ class MedicationLogPage extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        'Missed',
+                        'Missed'.tr,
                         style: TextStyle(
                           fontSize: 11,
                           color: theme.textTheme.bodyLarge!.color,
@@ -280,7 +280,7 @@ class MedicationLogPage extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Text(
-                'Filter Logs',
+                'Filter Logs'.tr,
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                   fontSize: 13,
@@ -293,7 +293,7 @@ class MedicationLogPage extends StatelessWidget {
 
           // Medication Filter
           Text(
-            'Medication',
+            'Medication'.tr,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -323,7 +323,7 @@ class MedicationLogPage extends StatelessWidget {
                   DropdownMenuItem(
                   value: 0,
                   child: Text(
-                    'All Medications',
+                    'All Medications'.tr,
                     style: TextStyle(fontSize: 13, color: theme.textTheme.bodyLarge!.color),
                   ),
                 ),
@@ -348,7 +348,7 @@ class MedicationLogPage extends StatelessWidget {
 
           // Status Filter
           Text(
-            'Status',
+            'Status'.tr,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -376,28 +376,28 @@ class MedicationLogPage extends StatelessWidget {
                 DropdownMenuItem(
                   value: 'all',
                   child: Text(
-                    'All Status',
+                    'All Status'.tr,
                     style: TextStyle(fontSize: 13, color: theme.textTheme.bodyLarge!.color),
                   ),
                 ),
                 DropdownMenuItem(
                   value: 'pending',
                   child: Text(
-                    'Pending',
+                    'Pending'.tr,
                     style: TextStyle(fontSize: 13, color: theme.textTheme.bodyLarge!.color),
                   ),
                 ),
                 DropdownMenuItem(
                   value: 'taken',
                   child: Text(
-                    'Taken',
+                    'Taken'.tr,
                     style: TextStyle(fontSize: 13, color: theme.textTheme.bodyLarge!.color),
                   ),
                 ),
                 DropdownMenuItem(
                   value: 'missed',
                   child: Text(
-                    'Missed',
+                    'Missed'.tr,
                     style: TextStyle(fontSize: 13, color: theme.textTheme.bodyLarge!.color),
                   ),
                 ),
@@ -414,7 +414,7 @@ Row(
   mainAxisAlignment: MainAxisAlignment.spaceBetween,
   children: [
            Text(
-            'Range',
+            'Range'.tr,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
@@ -431,11 +431,11 @@ Row(
         value: controller.selectedRange.value,
         dropdownColor: theme.cardColor,
         underline: const SizedBox.shrink(),
-        items: const [
-          DropdownMenuItem(value: 7, child: Text('Last 7 days')),
-          DropdownMenuItem(value: 30, child: Text('Last 30 days')),
-          DropdownMenuItem(value: 90, child: Text('Last 90 days')),
-          DropdownMenuItem(value: 0, child: Text('All time')),
+        items:  [// remove const
+          DropdownMenuItem(value: 7, child: Text('Last 7 days'.tr)),
+          DropdownMenuItem(value: 30, child: Text('Last 30 days'.tr)),
+          DropdownMenuItem(value: 90, child: Text('Last 90 days'.tr)),
+          DropdownMenuItem(value: 0, child: Text('All time'.tr)),
         ],
         onChanged: (v) {
           if (v != null) {
@@ -462,7 +462,7 @@ Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Recent Activity',
+              'Recent Activity'.tr,
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
@@ -471,7 +471,7 @@ Row(
             ),
             const SizedBox(height: 6),
             Text(
-              'No activity in this period.',
+              'No activity in this period.'.tr,
               style: TextStyle(fontSize: 11, color: theme.textTheme.bodyMedium!.color),
             ),
           ],
@@ -482,7 +482,7 @@ Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Recent Activity',
+            'Recent Activity'.tr,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 13,
